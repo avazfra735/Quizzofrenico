@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "715784943922",
+    "project_id": "tfgandroid-e0824",
+    "storage_bucket": "tfgandroid-e0824.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:715784943922:android:498705013e1be9aa90bf2b",
+        "android_client_info": {
+          "package_name": "es.iessaladillo.adrian.quizzofrenico"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHzh_29pGXmpKQ1_sD6Tg4dgyZIspnWPo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Quizzofrenico</string>
+    <string name="welcome_to_quizzofrenico">¡Bienvenido a Quizzofrenico!</string>
+    <string name="login">Iniciar Sesión</string>
+    <string name="register">Registrarse</string>
+    <string name="registerTitle">Registro</string>
+    <string name="email">Correo electrónico</string>
+    <string name="password">Contraseña</string>
+    <string name="confirm_password">Confirmar contraseña</string>
+    <string name="toggle_password_visibility">Mostrar/ocultar contraseña</string>
+    <string name="already_have_account">¿Ya tienes cuenta? Inicia sesión aquí</string>
+    <string name="no_account">¿No tienes cuenta? Registrate aquí</string>
+</resources>
