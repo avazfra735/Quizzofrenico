@@ -32,15 +32,26 @@ class DefaultRepository @Inject constructor() : Repository {
         return try {
             // 1. Crear prompt estructurado
             val prompt = """
-                Genera 5 preguntas de opción múltiple sobre $topic en español con un nivel $difficulty.
-                Formato para cada pregunta:
+                Genera 5 preguntas de opción múltiple sobre el tema "$topic" en español con un nivel de dificultad $difficulty. 
+                Cada pregunta debe tener 4 opciones (a, b, c, d) y una explicación clara de la respuesta correcta.
+                No incluyas información que no esté directamente relacionada con el tema "$topic".
+                El formato de cada pregunta debe ser EXACTAMENTE como el siguiente ejemplo:
+
+                1. ¿Cuál es la capital de España?
+                Opciones: a) Barcelona, b) Madrid, c) Sevilla, d) Valencia
+                Respuesta correcta: b) Madrid
+                Explicación: Madrid es la capital de España desde 1561.
+
+                ---
+
+                Por favor, sigue este formato para las 5 preguntas:
                 1. [Pregunta]
                 Opciones: a) ..., b) ..., c) ..., d) ...
                 Respuesta correcta: [opción]
                 Explicación: [texto]
                 ---
             """.trimIndent()
-
+            println(prompt)
             // 2. Llamar al modelo de IA
             val response: GenerateContentResponse = model.generateContent(prompt)
             // 3. Parsear respuesta
@@ -97,7 +108,10 @@ class DefaultRepository @Inject constructor() : Repository {
 
                 try {
                     // Eliminar palabras resaltadas con asteriscos
-                    val sanitizedBlock = questionBlock.replace("""\*\*(.*?)\*\*""".toRegex(), "$1")//El $1 hace referencia al contenido
+                    val sanitizedBlock = questionBlock.replace(
+                        """\*\*(.*?)\*\*""".toRegex(),
+                        "$1"
+                    )//El $1 hace referencia al contenido
 
                     val questionText = questionRegex.find(sanitizedBlock)?.groupValues?.get(2)
                         ?: return@mapNotNull null

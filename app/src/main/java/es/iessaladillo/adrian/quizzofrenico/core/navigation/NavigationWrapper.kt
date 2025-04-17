@@ -114,6 +114,7 @@ fun NavigationWrapper() {
             val isLastQuestion = quizzViewModel.isLastQuestion()
             val isLoading = quizzViewModel.isLoading.collectAsStateWithLifecycle()
             val selectedAnswer = quizzViewModel.selectedAnswer.collectAsStateWithLifecycle()
+            val optColors = quizzViewModel.optionColors.collectAsStateWithLifecycle()
             QuizzScreen(
                 questions.value,
                 onAnswerSelected,
@@ -122,7 +123,8 @@ fun NavigationWrapper() {
                 isLastQuestion,
                 navigateToResult,
                 isLoading.value,
-                selectedAnswer.value
+                selectedAnswer.value,
+                optColors.value
             )
         }
 

@@ -1,5 +1,6 @@
 package es.iessaladillo.adrian.quizzofrenico.ui.quizz
 
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,6 +29,10 @@ class QuizzViewModel @Inject constructor(
     val currentQuestion: StateFlow<Int>
         get() = _currentQuestion.asStateFlow()
 
+    private val _optionColors: MutableStateFlow<Map<String, Color>> = MutableStateFlow(emptyMap())
+    val optionColors: StateFlow<Map<String, Color>>
+        get() = _optionColors.asStateFlow()
+
     private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean>
         get() = _isLoading.asStateFlow()
@@ -39,7 +44,6 @@ class QuizzViewModel @Inject constructor(
     private val _isAnswerCorrect: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isAnswerCorrect: StateFlow<Boolean>
         get() = _isAnswerCorrect.asStateFlow()
-    
 
 
     // Retrieve the settings from the saved state handle
@@ -55,14 +59,14 @@ class QuizzViewModel @Inject constructor(
         }
     }
 
-    fun onAnswerSelected(option:String)  {
-        _selectedAnswer.value = option
+    fun onAnswerSelected(option: String) {
+        // Actualizar el estado de la respuesta seleccionada
+        _selectedAnswer.value = option.substringBefore(")")
+        backgroundColors(option)
     }
 
     fun onNextQuestion() {
-        _isAnswerCorrect.value = _selectedAnswer.value == questions.value[currentQuestion.value].correctAnswer
-
-        
+        _selectedAnswer.value = ""
         if (_currentQuestion.value < _questions.value.size - 1) {
             _currentQuestion.value++
         }
@@ -72,8 +76,23 @@ class QuizzViewModel @Inject constructor(
         return _currentQuestion.value == _questions.value.size - 1
     }
 
-    fun onBackPressed() {
-        // Handle back press logic here
-    }
+    private fun backgroundColors(option: String) {
+        val currentQ = _questions.value[_currentQuestion.value]
+        val correctAnswer = currentQ.correctAnswer
 
+        val selectedLetter = option.substringBefore(")")
+
+        // Calcular los colores para cada opción
+        val newColors = currentQ.options.associateWith { opt ->
+            val letter = opt.substringBefore(")")
+            when {
+                letter == correctAnswer -> Color.Green
+                letter == selectedLetter && letter != correctAnswer -> Color.Red
+                else -> Color.Transparent
+            }
+        }
+
+        // Actualizar el estado de los colores
+        _optionColors.value = newColors
+    }
 }

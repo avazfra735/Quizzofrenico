@@ -13,7 +13,7 @@ import es.iessaladillo.adrian.quizzofrenico.data.QuizzSettings
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChoosePlayMode(
-    navigateToQuizz: (String,String) -> Unit,
+    navigateToQuizz: (String, String) -> Unit,
     difficultSelected: String,
     onDifficultSelected: (String) -> Unit,
     inputValue: String,
@@ -54,7 +54,7 @@ fun ChoosePlayMode(
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(value = inputValue, onValueChange = onChangeInput)
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { navigateToQuizz(difficultSelected, inputValue) }) {
+            Button(onClick = { navigateToQuizz(inputValue, difficultSelected) }) {
                 Text(text = "Generar")
             }
         }
@@ -85,5 +85,6 @@ fun ChoosePlayModePreview() {
         "",
         onDifficultSelected = {},
         "",
-        onChangeInput = {},)
+        onChangeInput = {},
+    )
 }
