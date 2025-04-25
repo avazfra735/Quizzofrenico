@@ -41,13 +41,13 @@ class QuizzViewModel @Inject constructor(
     val selectedAnswer: StateFlow<String>
         get() = _selectedAnswer.asStateFlow()
 
-    private val _isAnswerCorrect: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isAnswerCorrect: StateFlow<Boolean>
-        get() = _isAnswerCorrect.asStateFlow()
+    private val _answers: MutableStateFlow<Map<String, Boolean>> = MutableStateFlow(emptyMap())
+    val answers: StateFlow<Map<String, Boolean>>
+        get() = _answers.asStateFlow()
 
 
     // Retrieve the settings from the saved state handle
-    private val settings = savedStateHandle.toRoute<QuizzSettings>()
+    val settings = savedStateHandle.toRoute<QuizzSettings>()
 
 
     init {
@@ -63,6 +63,8 @@ class QuizzViewModel @Inject constructor(
         // Actualizar el estado de la respuesta seleccionada
         _selectedAnswer.value = option.substringBefore(")")
         backgroundColors(option)
+        scoreUp(option)
+        println(_answers.value)
     }
 
     fun onNextQuestion() {
@@ -94,5 +96,16 @@ class QuizzViewModel @Inject constructor(
 
         // Actualizar el estado de los colores
         _optionColors.value = newColors
+    }
+
+    private fun scoreUp(option: String) {
+        // Actualizar el estado de las respuestas correctas
+        val currentQ = _questions.value[_currentQuestion.value]
+        val correctAnswer = currentQ.correctAnswer
+        val selectedLetter = option.substringBefore(")")
+        val isCorrect = selectedLetter == correctAnswer
+        _answers.value =
+            answers.value + ("Pregunta " + (_currentQuestion.value + 1) to isCorrect)
+
     }
 }

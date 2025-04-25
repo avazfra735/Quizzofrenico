@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ChoosePlayModeViewModel @Inject constructor(private val repository: Repository) :
+class ChoosePlayModeViewModel @Inject constructor() :
     ViewModel() {
 
     private val _inputValue: MutableStateFlow<String> = MutableStateFlow("")

@@ -16,6 +16,9 @@ import es.iessaladillo.adrian.quizzofrenico.ui.quizz.QuizzViewModel
 import es.iessaladillo.adrian.quizzofrenico.ui.register.RegisterScreen
 import es.iessaladillo.adrian.quizzofrenico.ui.register.RegisterViewModel
 import es.iessaladillo.adrian.quizzofrenico.ui.result.ResultScreen
+import es.iessaladillo.adrian.quizzofrenico.ui.result.ResultViewModel
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
 
 @Composable
 fun NavigationWrapper() {
@@ -104,7 +107,23 @@ fun NavigationWrapper() {
 
         composable<Quizz> { entry ->
             val quizzViewModel: QuizzViewModel = hiltViewModel(entry)
-            val navigateToResult = { navController.navigate(Result) }
+            val topic = quizzViewModel.settings.topic
+            val difficulty = quizzViewModel.settings.difficulty
+            val answers = quizzViewModel.answers.collectAsStateWithLifecycle()
+            //Tenemos que pasar el mapa a String porque ha dia de hoy solo toma valores simples
+            val navigateToResult: (String, String, Map<String, Boolean>) -> Unit =
+                { topic, difficulty, answers ->
+                    println(answers)
+                    val jsonAnswers = Json.encodeToString(answers)
+                    println(jsonAnswers)
+                    navController.navigate(
+                        Result(
+                            topic,
+                            difficulty,
+                            jsonAnswers
+                        )
+                    )
+                }
             val questions = quizzViewModel.questions.collectAsStateWithLifecycle()
             val currentQuestionIndex = quizzViewModel.currentQuestion.collectAsStateWithLifecycle()
             val onAnswerSelected: (String) -> Unit = { answer ->
@@ -124,13 +143,26 @@ fun NavigationWrapper() {
                 navigateToResult,
                 isLoading.value,
                 selectedAnswer.value,
-                optColors.value
+                optColors.value,
+                topic,
+                difficulty,
+                answers.value
             )
         }
 
         composable<Result> { entry ->
-
-            ResultScreen()
+            val resultViewModel: ResultViewModel = hiltViewModel(entry)
+            val navigateToChoosePlayMode: () -> Unit =
+                { navController.popBackStack(ChoosePlayMode, false) }
+            val topic = resultViewModel.results.topic
+            val difficulty = resultViewModel.results.difficulty
+            val answers = resultViewModel.answers
+            ResultScreen(
+                topic,
+                difficulty,
+                answers,
+                navigateToChoosePlayMode
+            )
         }
 
     }

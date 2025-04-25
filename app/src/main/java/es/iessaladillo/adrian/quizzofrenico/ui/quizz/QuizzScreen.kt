@@ -26,10 +26,13 @@ fun QuizzScreen(
     onNextQuestion: () -> Unit,
     currentQuestionIndex: Int,
     isLastQuestion: Boolean,
-    navigateToResult: () -> Unit,
+    navigateToResult: (String, String, Map<String, Boolean>) -> Unit,
     isLoading: Boolean,
     selectedAnswer: String,
-    optColors: Map<String, Color>
+    optColors: Map<String, Color>,
+    topic: String,
+    difficulty: String,
+    answers: Map<String, Boolean>
 ) {
     if (isLoading) {
         Box(
@@ -37,6 +40,7 @@ fun QuizzScreen(
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator()
+            Spacer(Modifier.height(16.dp))
             Text("Generando preguntas...")
         }
     } else {
@@ -114,7 +118,7 @@ fun QuizzScreen(
                 Button(
                     onClick = {
                         if (isLastQuestion) {
-                            navigateToResult()
+                            navigateToResult(topic, difficulty, answers)
                         } else {
                             onNextQuestion()
                         }
@@ -158,9 +162,12 @@ fun QuizzScreenPreview() {
         onNextQuestion = {},
         currentQuestionIndex = 0,
         isLastQuestion = false,
-        navigateToResult = {},
+        navigateToResult = { _, _, _ -> },
         isLoading = false,
         selectedAnswer = "",
-        optColors = emptyMap()
+        optColors = emptyMap(),
+        topic = "Geografía",
+        difficulty = "Fácil",
+        answers = emptyMap()
     )
 }
