@@ -28,12 +28,20 @@ class RegisterViewModel @Inject constructor(private val repository: Repository) 
     private val _errorMessage: MutableStateFlow<String> = MutableStateFlow("")
     val errorMessage: StateFlow<String>
         get() = _errorMessage.asStateFlow()
+    private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> get() = _isLoading.asStateFlow()
 
 
     fun register(email: String, password: String) {
         viewModelScope.launch {
+            setLoading(true)
             repository.register(email, password)
+            setLoading(false)
         }
+    }
+
+    fun setLoading(isLoading: Boolean) {
+        _isLoading.value = isLoading
     }
 
     fun onEmailChange(newEmail: String) {

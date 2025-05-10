@@ -32,12 +32,16 @@ fun NavigationWrapper() {
 
         composable<Register> { entry ->
             val registerViewModel: RegisterViewModel = hiltViewModel(entry)
-            val navigateToLogin = { navController.navigate(Login) }
+            val navigateToLogin = {
+                navController.popBackStack()
+                navController.navigate(Login)
+            }
             val email = registerViewModel.email.collectAsStateWithLifecycle()
             val password = registerViewModel.password.collectAsStateWithLifecycle()
             val confPassword = registerViewModel.confPassword.collectAsStateWithLifecycle()
             val showPassword = registerViewModel.showPassword.collectAsStateWithLifecycle()
             val errorMessage = registerViewModel.errorMessage.collectAsStateWithLifecycle()
+            val isLoading = registerViewModel.isLoading.collectAsStateWithLifecycle()
             val onChangeEmail: (String) -> Unit = { registerViewModel.onEmailChange(it) }
             val onChangePassword: (String) -> Unit = { registerViewModel.onPasswordChange(it) }
             val onChangeConfPassword: (String) -> Unit =
@@ -54,13 +58,16 @@ fun NavigationWrapper() {
                 confPassword.value, onChangeConfPassword,
                 showPassword.value, onShowPassword,
                 errorMessage.value, onErrorMessageChange,
-                onRegister, navigateToLogin
+                onRegister, navigateToLogin, isLoading.value
             )
         }
 
         composable<Login> { entry ->
             val loginViewModel: LoginViewModel = hiltViewModel(entry)
-            val navigateToRegister = { navController.navigate(Register) }
+            val navigateToRegister = {
+                navController.popBackStack()
+                navController.navigate(Register)
+            }
             val email = loginViewModel.email.collectAsStateWithLifecycle()
             val password = loginViewModel.password.collectAsStateWithLifecycle()
             val authenticate =
@@ -71,6 +78,7 @@ fun NavigationWrapper() {
             val errorMessage = loginViewModel.errorMessage.collectAsStateWithLifecycle()
             val onShowPassword = { loginViewModel.togglePasswordVisibility() }
             val onErrorMessageChange: (String) -> Unit = { loginViewModel.errorMessage(it) }
+            val isLoading = loginViewModel.isLoading.collectAsStateWithLifecycle()
             LoginScreen(
                 email.value,
                 password.value,
@@ -81,7 +89,8 @@ fun NavigationWrapper() {
                 showPassword.value,
                 errorMessage.value,
                 onShowPassword,
-                onErrorMessageChange
+                onErrorMessageChange,
+                isLoading.value
             )
         }
 
@@ -113,9 +122,7 @@ fun NavigationWrapper() {
             //Tenemos que pasar el mapa a String porque ha dia de hoy solo toma valores simples
             val navigateToResult: (String, String, Map<String, Boolean>) -> Unit =
                 { topic, difficulty, answers ->
-                    println(answers)
                     val jsonAnswers = Json.encodeToString(answers)
-                    println(jsonAnswers)
                     navController.navigate(
                         Result(
                             topic,

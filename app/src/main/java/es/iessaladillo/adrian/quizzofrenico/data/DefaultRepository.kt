@@ -1,32 +1,17 @@
 package es.iessaladillo.adrian.quizzofrenico.data
 
-import es.iessaladillo.adrian.quizzofrenico.BuildConfig
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.GenerateContentResponse
-import com.google.ai.client.generativeai.type.generationConfig
-import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class DefaultRepository @Inject constructor() : Repository {
-
-    private val auth = Firebase.auth
-    private val firestore = Firebase.firestore
-
-    private val model = GenerativeModel(
-        "gemini-2.0-flash",
-        BuildConfig.geminiApiKey,
-        generationConfig = generationConfig {
-            temperature = 0.1f
-            topK = 40
-            topP = 0.95f
-            maxOutputTokens = 8192
-            responseMimeType = "text/plain"
-        },
-    )
+class DefaultRepository @Inject constructor(
+    private val auth: FirebaseAuth, private val firestore: FirebaseFirestore,
+    private val model: GenerativeModel
+) : Repository {
 
     override suspend fun generateQuizz(topic: String, difficulty: String): List<Question> {
         return try {
@@ -83,17 +68,22 @@ class DefaultRepository @Inject constructor() : Repository {
         }
     }
 
-    override suspend fun saveQuizzSettings(settings: QuizzSettings): String {
-        val uid = auth.currentUser?.uid ?: throw IllegalStateException("User not authenticated")
-        val docRef = firestore.collection("users").document(uid).collection("quizzes").document()
+    override suspend fun saveQuizz(topic: String, difficulty: String, result: Int): String {
+        val email = auth.currentUser?.email ?: throw IllegalStateException("User not authenticated")
+        val docRef = firestore.collection("users").document(email).collection("quizzes").document()
         val quizData = mapOf(
             "quizId" to docRef.id,
-            "topic" to settings.topic,
-            "difficulty" to settings.difficulty,
+            "topic" to topic,
+            "difficulty" to difficulty,
+            "result" to result,
             "timestamp" to FieldValue.serverTimestamp(),
         )
         docRef.set(quizData).await()
         return docRef.id
+    }
+
+    override suspend fun getQuizz(): Map<String, String> {
+        TODO("Not yet implemented")
     }
 
     private fun parseQuestions(rawText: String): List<Question> {

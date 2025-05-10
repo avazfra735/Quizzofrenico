@@ -29,6 +29,13 @@ class LoginViewModel @Inject constructor(
     private val _errorMessage: MutableStateFlow<String?> = MutableStateFlow(null)
     val errorMessage: StateFlow<String?> get() = _errorMessage.asStateFlow()
 
+    private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> get() = _isLoading.asStateFlow()
+
+    fun setLoading(isLoading: Boolean) {
+        _isLoading.value = isLoading
+    }
+
     fun onEmailChange(newEmail: String) {
         _email.value = newEmail
     }
@@ -48,7 +55,9 @@ class LoginViewModel @Inject constructor(
 
     fun login(onLoginSucces: () -> Unit) {
         viewModelScope.launch {
+            setLoading(true)
             sessionManager.userId = repository.authenticate(_email.value, _password.value)
+            setLoading(false)
             if (sessionManager.userId != null) {
                 onLoginSucces()
             } else{

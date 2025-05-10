@@ -1,5 +1,6 @@
 package es.iessaladillo.adrian.quizzofrenico.ui.result
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,6 +40,12 @@ fun ResultScreen(
     answers: Map<String, Boolean>, // Clave: Título de la pregunta, Valor: Respuesta correcta (true/false)
     navigateToChoosePlayMode: () -> Unit
 ) {
+
+    // Interceptamos el boton atras del sistema
+    BackHandler {
+        navigateToChoosePlayMode()
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(

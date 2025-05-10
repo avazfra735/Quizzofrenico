@@ -1,5 +1,6 @@
 package es.iessaladillo.adrian.quizzofrenico.ui.register
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -19,6 +20,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import es.iessaladillo.adrian.quizzofrenico.R
 import es.iessaladillo.adrian.quizzofrenico.ui.theme.QuizzofrenicoTheme
 
@@ -36,9 +38,27 @@ fun RegisterScreen(
     errorMessage: String,
     onErrorMessageChange: (String) -> Unit,
     onRegister: (email: String, password: String) -> Unit,
-    navigateToLogin: () -> Unit
+    navigateToLogin: () -> Unit, isLoading: Boolean
 ) {
-
+    if (isLoading) {
+        Dialog(onDismissRequest = {}) {
+            Box(
+                modifier = Modifier
+                    .size(120.dp)
+                    .background(Color.White, shape = MaterialTheme.shapes.medium),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator(color = Color(0xFF6a1b9a))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Cargando...", color = Color(0xFF6a1b9a))
+                }
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -181,7 +201,8 @@ fun RegisterScreenPreview() {
             errorMessage = "",
             onErrorMessageChange = {},
             onRegister = { _, _ -> },
-            navigateToLogin = {}
+            navigateToLogin = {},
+            isLoading = false
         )
     }
 }
