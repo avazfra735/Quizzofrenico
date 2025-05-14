@@ -14,10 +14,11 @@ class DefaultRepository @Inject constructor(
 ) : Repository {
 
     override suspend fun generateQuizz(topic: String, difficulty: String): List<Question> {
+        val nPreguntas = 5
         return try {
             // 1. Crear prompt estructurado
             val prompt = """
-                Genera 5 preguntas de opción múltiple sobre el tema "$topic" en español con un nivel de dificultad $difficulty. 
+                Genera $nPreguntas preguntas de opción múltiple sobre el tema "$topic" en español con un nivel de dificultad $difficulty. 
                 Cada pregunta debe tener 4 opciones (a, b, c, d) y una explicación clara de la respuesta correcta.
                 No incluyas información que no esté directamente relacionada con el tema "$topic".
                 El formato de cada pregunta debe ser EXACTAMENTE como el siguiente ejemplo:
@@ -48,42 +49,67 @@ class DefaultRepository @Inject constructor(
         }
     }
 
-    override suspend fun authenticate(email: String, password: String): String? {
-        return try {
-            val result = auth.signInWithEmailAndPassword(email, password).await()
-            result.user?.uid
+    override suspend fun isUserLoggedIn(): Boolean {
+        return auth.currentUser != null
+    }
+
+    override suspend fun authenticate(email: String, password: String) {
+        try {
+            auth.signInWithEmailAndPassword(email, password).await()
+            println(auth.currentUser)
         } catch (e: Exception) {
+            auth.signOut() // Cerrar sesión si hay error
             println("Error during authentication: ${e.message}")
-            null
         }
     }
 
-    override suspend fun register(email: String, password: String): String? {
-        return try {
-            val result = auth.createUserWithEmailAndPassword(email, password).await()
-            result.user?.uid
+    override suspend fun register(email: String, password: String) {
+        try {
+            auth.createUserWithEmailAndPassword(email, password).await()
+            println(auth.currentUser)
         } catch (e: Exception) {
             println("Error during registration: ${e.message}")
-            null
         }
     }
 
-    override suspend fun saveQuizz(topic: String, difficulty: String, result: Int): String {
-        val email = auth.currentUser?.email ?: throw IllegalStateException("User not authenticated")
-        val docRef = firestore.collection("users").document(email).collection("quizzes").document()
-        val quizData = mapOf(
-            "quizId" to docRef.id,
-            "topic" to topic,
-            "difficulty" to difficulty,
-            "result" to result,
-            "timestamp" to FieldValue.serverTimestamp(),
-        )
-        docRef.set(quizData).await()
-        return docRef.id
+    override suspend fun saveQuizz(topic: String, difficulty: String, result: Int, total: Int) {
+        try {
+            val email =
+                auth.currentUser?.email ?: throw IllegalStateException("User not authenticated")
+            val docRef =
+                firestore.collection("users").document(email).collection("quizzes").document()
+            val quizData = mapOf(
+                "quizId" to docRef.id,
+                "topic" to topic,
+                "difficulty" to difficulty,
+                "result" to result,
+                "total" to total,
+                "timestamp" to FieldValue.serverTimestamp(),
+            )
+            docRef.set(quizData).await()
+        } catch (e: Exception) {
+            println("Error saving quiz: ${e.message}")
+        }
     }
 
-    override suspend fun getQuizz(): Map<String, String> {
-        TODO("Not yet implemented")
+    override suspend fun getQuizz(): List<Score> {
+        return try {
+            val email =
+                auth.currentUser?.email ?: throw IllegalStateException("User not authenticated")
+            val quizzes = firestore.collection("users").document(email).collection("quizzes")
+                .orderBy("timestamp").get().await()
+            quizzes.documents.map { doc ->
+                Score(
+                    topic = doc.getString("topic") ?: "",
+                    difficulty = doc.getString("difficulty") ?: "",
+                    score = doc.getLong("result")?.toInt() ?: 0,
+                    date = doc.getDate("timestamp")?.toString() ?: ""
+                )
+            }
+        } catch (e: Exception) {
+            println("Error fetching quizzes: ${e.message}")
+            emptyList()
+        }
     }
 
     private fun parseQuestions(rawText: String): List<Question> {
@@ -120,6 +146,7 @@ class DefaultRepository @Inject constructor(
                         explanation = explanation.trim()
                     )
                 } catch (e: Exception) {
+                    println("Error parsing question block: ${e.message}")
                     null // Ignorar bloques mal formateados
                 }
             }

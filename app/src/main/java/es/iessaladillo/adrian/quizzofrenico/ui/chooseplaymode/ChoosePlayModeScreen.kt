@@ -11,19 +11,16 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChoosePlayMode(
+fun ChoosePlayModeScreen(
     navigateToQuizz: (String, String) -> Unit,
     difficultSelected: String,
     onDifficultSelected: (String) -> Unit,
     inputValue: String,
     onChangeInput: (String) -> Unit,
+    navigateToScores: () -> Unit
 ) {
     Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text(text = "Elegir dificultad") }
-            )
-        }
+        topBar = { ChoosePlayModeTopBar() }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -33,7 +30,19 @@ fun ChoosePlayMode(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            //Button(navigateToScores) { }
+            Button(
+                onClick = navigateToScores,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF6200EE), // Color de fondo
+                    contentColor = Color.White // Color del texto
+                ),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Text("Ver resultados anteriores")
+            }
             DifficultyButton(
                 text = "Fácil",
                 isSelected = difficultSelected == "Fácil",
@@ -52,10 +61,22 @@ fun ChoosePlayMode(
                 onClick = { onDifficultSelected("Difícil") }
             )
             Spacer(modifier = Modifier.height(16.dp))
-            OutlinedTextField(value = inputValue, onValueChange = onChangeInput)
+            Text(
+                text = "Introduce el tema del quiz",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = inputValue,
+                onValueChange = onChangeInput,
+                label = { Text("Tema") },
+                placeholder = { Text("Ej: Historia") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = { navigateToQuizz(inputValue, difficultSelected) }) {
-                Text(text = "Generar")
+                Text(text = "Generar quiz")
             }
         }
 
@@ -77,14 +98,28 @@ private fun DifficultyButton(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ChoosePlayModeTopBar() {
+    CenterAlignedTopAppBar(
+        title = { Text(text = "Elegir dificultad") },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = Color(0xFF6a1b9a),
+            titleContentColor = Color.White,
+            navigationIconContentColor = Color.White
+        )
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun ChoosePlayModePreview() {
-    ChoosePlayMode(
+    ChoosePlayModeScreen(
         navigateToQuizz = { _, _ -> },
         "",
         onDifficultSelected = {},
         "",
         onChangeInput = {},
+        navigateToScores = { },
     )
 }

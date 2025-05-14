@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.iessaladillo.adrian.quizzofrenico.data.Repository
-import es.iessaladillo.adrian.quizzofrenico.data.SessionManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,8 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val repository: Repository,
-    private val sessionManager: SessionManager
+    private val repository: Repository
 ) : ViewModel() {
 
     private val _email: MutableStateFlow<String> = MutableStateFlow("")
@@ -55,13 +53,15 @@ class LoginViewModel @Inject constructor(
 
     fun login(onLoginSucces: () -> Unit) {
         viewModelScope.launch {
-            setLoading(true)
-            sessionManager.userId = repository.authenticate(_email.value, _password.value)
-            setLoading(false)
-            if (sessionManager.userId != null) {
-                onLoginSucces()
-            } else{
-                _errorMessage.value = "Usuario o contraseña incorrectos"
+            try {
+                setLoading(true)
+                repository.authenticate(_email.value, _password.value)
+                setLoading(false)
+                if (repository.isUserLoggedIn()) onLoginSucces() else _errorMessage.value =
+                    "Error en el inicio de sesión, comprueba los datos"
+
+            } catch (e: Exception) {
+                println("Error: ${e.message}")
             }
         }
     }

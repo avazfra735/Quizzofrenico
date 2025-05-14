@@ -6,7 +6,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import es.iessaladillo.adrian.quizzofrenico.ui.chooseplaymode.ChoosePlayMode
+import es.iessaladillo.adrian.quizzofrenico.ui.chooseplaymode.ChoosePlayModeScreen
 import es.iessaladillo.adrian.quizzofrenico.ui.home.HomeScreen
 import es.iessaladillo.adrian.quizzofrenico.ui.login.LoginScreen
 import es.iessaladillo.adrian.quizzofrenico.ui.chooseplaymode.ChoosePlayModeViewModel
@@ -17,6 +17,8 @@ import es.iessaladillo.adrian.quizzofrenico.ui.register.RegisterScreen
 import es.iessaladillo.adrian.quizzofrenico.ui.register.RegisterViewModel
 import es.iessaladillo.adrian.quizzofrenico.ui.result.ResultScreen
 import es.iessaladillo.adrian.quizzofrenico.ui.result.ResultViewModel
+import es.iessaladillo.adrian.quizzofrenico.ui.scores.ScoresScreen
+import es.iessaladillo.adrian.quizzofrenico.ui.scores.ScoresViewModel
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
 
@@ -99,19 +101,32 @@ fun NavigationWrapper() {
             val navigateToQuizz: (String, String) -> Unit = { topic, difficulty ->
                 navController.navigate(Quizz(topic, difficulty))
             }
+            val navigateToScores: () -> Unit = {
+                navController.navigate(Scores)
+            }
             val inputValue = choosePlayModeViewModel.inputValue.collectAsStateWithLifecycle()
             val onChangeInput: (String) -> Unit = { choosePlayModeViewModel.onChangeInput(it) }
             val onDifficultSelected: (String) -> Unit =
                 { choosePlayModeViewModel.onDifficultSelected(it) }
             val difficultSelected =
                 choosePlayModeViewModel.onDifficultSelected.collectAsStateWithLifecycle()
-            ChoosePlayMode(
+            ChoosePlayModeScreen(
                 navigateToQuizz,
                 difficultSelected.value,
                 onDifficultSelected,
                 inputValue.value,
                 onChangeInput,
+                navigateToScores
             )
+        }
+
+        composable<Scores> { entry ->
+            val scoresViewModel: ScoresViewModel = hiltViewModel(entry)
+            val scores = scoresViewModel.scores.collectAsStateWithLifecycle()
+            val navigateBack: () -> Unit = { navController.popBackStack() }
+            //val onDeleteScore: (String) -> Unit = { scoresViewModel.deleteScore(it) }
+            ScoresScreen(scores.value, navigateBack)
+
         }
 
         composable<Quizz> { entry ->

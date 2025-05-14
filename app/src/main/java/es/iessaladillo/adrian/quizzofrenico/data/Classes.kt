@@ -9,6 +9,13 @@ data class Question(
     val explanation: String
 )
 
+data class Score(
+    val topic: String,
+    val difficulty: String,
+    val score: Int,
+    val date: String
+)
+
 //Is necesary to use serializable to convert the data class to a json string
 @Serializable
 data class QuizzSettings(val topic: String, val difficulty: String)

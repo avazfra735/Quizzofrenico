@@ -20,10 +20,12 @@ class ResultViewModel @Inject constructor(
 
     val results = savedStateHandle.toRoute<QuizzResult>()
     val answers: Map<String, Boolean> = Json.decodeFromString(results.answers)
+    val score = answers.values.count { it } // Contar respuestas correctas
+    val total = answers.size // Total de preguntas
 
     init {
         viewModelScope.launch {
-            repository.saveQuizz(results.topic, results.difficulty,0)
+            repository.saveQuizz(results.topic, results.difficulty, score, total)
         }
     }
 }
