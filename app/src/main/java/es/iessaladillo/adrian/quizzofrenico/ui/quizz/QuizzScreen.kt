@@ -123,7 +123,9 @@ fun QuizzScreen(
                             onNextQuestion()
                         }
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = selectedAnswer.isNotEmpty()
+
                 ) {
                     Text(
                         text = if (isLastQuestion) "Finalizar Quiz" else "Siguiente Pregunta",

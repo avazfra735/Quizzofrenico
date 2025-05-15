@@ -87,7 +87,7 @@ private fun ScoreItem(testResult: Score) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Resultado: ${testResult.score}/${testResult.score}",//Añadir el total de preguntas
+                    text = "Resultado: ${testResult.score}/${testResult.total}",//Añadir el total de preguntas
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -124,9 +124,9 @@ fun ScoresTopBar(
 fun ScoresScreenPreview() {
     ScoresScreen(
         scores = listOf(
-            Score("Tema 1", "Fácil", 5, "2023-10-01"),
-            Score("Tema 2", "Intermedio", 3, "2023-10-02"),
-            Score("Tema 3", "Difícil", 4, "2023-10-03")
+            Score("Tema 1", "Fácil", 5, 5,"2023-10-01"),
+            Score("Tema 2", "Intermedio", 3, 5,"2023-10-02"),
+            Score("Tema 3", "Difícil", 4,5, "2023-10-03")
         ),
         onBackClick = {}
     )

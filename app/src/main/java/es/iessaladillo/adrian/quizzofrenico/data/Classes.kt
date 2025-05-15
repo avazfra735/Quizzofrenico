@@ -13,6 +13,7 @@ data class Score(
     val topic: String,
     val difficulty: String,
     val score: Int,
+    val total:Int,
     val date: String
 )
 

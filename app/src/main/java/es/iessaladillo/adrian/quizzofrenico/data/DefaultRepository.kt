@@ -14,11 +14,11 @@ class DefaultRepository @Inject constructor(
 ) : Repository {
 
     override suspend fun generateQuizz(topic: String, difficulty: String): List<Question> {
-        val nPreguntas = 5
+
         return try {
             // 1. Crear prompt estructurado
             val prompt = """
-                Genera $nPreguntas preguntas de opción múltiple sobre el tema "$topic" en español con un nivel de dificultad $difficulty. 
+                Genera 5 preguntas de opción múltiple sobre el tema "$topic" en español con un nivel de dificultad $difficulty. 
                 Cada pregunta debe tener 4 opciones (a, b, c, d) y una explicación clara de la respuesta correcta.
                 No incluyas información que no esté directamente relacionada con el tema "$topic".
                 El formato de cada pregunta debe ser EXACTAMENTE como el siguiente ejemplo:
@@ -103,6 +103,7 @@ class DefaultRepository @Inject constructor(
                     topic = doc.getString("topic") ?: "",
                     difficulty = doc.getString("difficulty") ?: "",
                     score = doc.getLong("result")?.toInt() ?: 0,
+                    total = doc.getLong("total")?.toInt() ?: 0,
                     date = doc.getDate("timestamp")?.toString() ?: ""
                 )
             }
