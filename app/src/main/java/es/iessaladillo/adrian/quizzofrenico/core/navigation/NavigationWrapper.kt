@@ -156,6 +156,7 @@ fun NavigationWrapper() {
             val isLoading = quizzViewModel.isLoading.collectAsStateWithLifecycle()
             val selectedAnswer = quizzViewModel.selectedAnswer.collectAsStateWithLifecycle()
             val optColors = quizzViewModel.optionColors.collectAsStateWithLifecycle()
+            val timer = quizzViewModel.timer.collectAsStateWithLifecycle()
             QuizzScreen(
                 questions.value,
                 onAnswerSelected,
@@ -168,7 +169,8 @@ fun NavigationWrapper() {
                 optColors.value,
                 topic,
                 difficulty,
-                answers.value
+                answers.value,
+                timer.value
             )
         }
 

@@ -1,5 +1,7 @@
 package es.iessaladillo.adrian.quizzofrenico.ui.quizz
 
+import android.annotation.SuppressLint
+import android.os.CountDownTimer
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -45,6 +47,34 @@ class QuizzViewModel @Inject constructor(
     val answers: StateFlow<Map<String, Boolean>>
         get() = _answers.asStateFlow()
 
+    private val _timer: MutableStateFlow<String> = MutableStateFlow("")
+    val timer: StateFlow<String>
+        get() = _timer.asStateFlow()
+
+    private var countDownTimer: CountDownTimer? = null
+
+    @SuppressLint("DefaultLocale")
+    fun startTimer(durationInMillis: Long = 60000) {
+        countDownTimer?.cancel() // Cancela cualquier temporizador previo
+        countDownTimer = object : CountDownTimer(durationInMillis, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val seconds = millisUntilFinished / 1000
+                _timer.value = String.format("%02d:%02d", seconds / 60, seconds % 60)
+                println("Tiempo restante: ${_timer.value}")
+            }
+
+            override fun onFinish() {
+                _timer.value = "Tiempo agotado"
+                println("Tiempo agotado")
+                // Aquí puedes manejar el evento de tiempo agotado
+            }
+        }.start()
+    }
+
+    fun stopTimer() {
+        countDownTimer?.cancel()
+    }
+
 
     // Retrieve the settings from the saved state handle
     val settings = savedStateHandle.toRoute<QuizzSettings>()
@@ -55,6 +85,7 @@ class QuizzViewModel @Inject constructor(
             _isLoading.value = true
             _questions.value = repository.generateQuizz(settings.topic, settings.difficulty)
             _isLoading.value = false
+            startTimer()//Si quisieramos que el temporizador no tuviera 60seg(60000ms) podriamos pasarlo como argumento
             println(_questions.value)
         }
     }
@@ -68,9 +99,13 @@ class QuizzViewModel @Inject constructor(
     }
 
     fun onNextQuestion() {
-        _selectedAnswer.value = ""
-        if (_currentQuestion.value < _questions.value.size - 1) {
-            _currentQuestion.value++
+        if (_selectedAnswer.value.isNotEmpty()) { // Verifica si la pregunta ha sido respondida
+            if (_currentQuestion.value < _questions.value.size - 1) {
+                _selectedAnswer.value = ""
+                _currentQuestion.value++
+            } else {
+                stopTimer() // Detener el temporizador si es la última pregunta
+            }
         }
     }
 

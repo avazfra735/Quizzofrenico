@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import es.iessaladillo.adrian.quizzofrenico.data.Question
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,24 +33,30 @@ fun QuizzScreen(
     optColors: Map<String, Color>,
     topic: String,
     difficulty: String,
-    answers: Map<String, Boolean>
+    answers: Map<String, Boolean>,
+    quizTimer: String
 ) {
     if (isLoading) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
-            Spacer(Modifier.height(16.dp))
-            Text("Generando preguntas...")
+        Dialog(onDismissRequest = {}) {
+            Box(
+                modifier = Modifier
+                    .size(120.dp)
+                    .background(Color.White, shape = MaterialTheme.shapes.medium),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator(color = Color(0xFF6a1b9a))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Cargando preguntas...", color = Color(0xFF6a1b9a))
+                }
+            }
         }
     } else {
         Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text(text = "Quiz - Pregunta ${currentQuestionIndex + 1}/${questions.size}") }
-                )
-            }
+            topBar = { QuizzTopAppBar(currentQuestionIndex, questions.size, quizTimer) }
         ) { innerPadding ->
             Column(
                 modifier = Modifier
@@ -140,6 +147,22 @@ fun QuizzScreen(
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun QuizzTopAppBar(currentQuestionIndex: Int, questions: Int, quizTimer: String) {
+    CenterAlignedTopAppBar(
+        title = { Text(text = "Quiz - Pregunta ${currentQuestionIndex + 1}/${questions}") },
+        actions = {
+            Text(
+                text = quizTimer,
+                modifier = Modifier.padding(16.dp),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+        },
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun QuizzScreenPreview() {
@@ -170,6 +193,7 @@ fun QuizzScreenPreview() {
         optColors = emptyMap(),
         topic = "Geografía",
         difficulty = "Fácil",
-        answers = emptyMap()
+        answers = emptyMap(),
+        quizTimer = "00:00"
     )
 }
