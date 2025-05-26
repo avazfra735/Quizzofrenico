@@ -61,37 +61,44 @@ private fun ScoreItem(testResult: Score) {
             .padding(vertical = 4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "Tema: ${testResult.topic}",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "Dificultad: ${testResult.difficulty}",
-                fontSize = 14.sp,
-                color = Color.Gray
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "Fecha: ${testResult.date}",
-                fontSize = 14.sp,
-                color = Color.Gray
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Column {
                 Text(
-                    text = "Resultado: ${testResult.score}/${testResult.total}",//Añadir el total de preguntas
+                    text = "Tema: ${testResult.topic}",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Dificultad: ${testResult.difficulty}",
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Fecha: ${testResult.date}",
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Resultado: ${testResult.score}/${testResult.total}",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
+            Text(
+                text = testResult.timer,
+                fontSize = 24.sp, // Tamaño grande
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF6a1b9a) // Color destacado
+            )
         }
     }
 }
@@ -119,14 +126,15 @@ fun ScoresTopBar(
     )
 }
 
+
 @Preview(showBackground = true)
 @Composable
 fun ScoresScreenPreview() {
     ScoresScreen(
         scores = listOf(
-            Score("Tema 1", "Fácil", 5, 5,"2023-10-01"),
-            Score("Tema 2", "Intermedio", 3, 5,"2023-10-02"),
-            Score("Tema 3", "Difícil", 4,5, "2023-10-03")
+            Score("Tema 1", "Fácil", 5, 5,"2023-10-01", "00:30"),
+            Score("Tema 2", "Intermedio", 3, 5,"2023-10-02","00:45"),
+            Score("Tema 3", "Difícil", 4,5, "2023-10-03", "00:50")
         ),
         onBackClick = {}
     )

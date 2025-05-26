@@ -21,5 +21,5 @@ object Scores
 data class Quizz(val topic: String, val difficulty: String)
 
 @Serializable
-data class Result(val topic: String, val difficulty: String, val answers: String)
+data class Result(val topic: String, val difficulty: String, val answers: String,val timer : String)
 

@@ -134,15 +134,18 @@ fun NavigationWrapper() {
             val topic = quizzViewModel.settings.topic
             val difficulty = quizzViewModel.settings.difficulty
             val answers = quizzViewModel.answers.collectAsStateWithLifecycle()
+            val timerResult = quizzViewModel.timer.collectAsStateWithLifecycle()
             //Tenemos que pasar el mapa a String porque ha dia de hoy solo toma valores simples
             val navigateToResult: (String, String, Map<String, Boolean>) -> Unit =
                 { topic, difficulty, answers ->
                     val jsonAnswers = Json.encodeToString(answers)
+                    quizzViewModel.stopTimer() // Detener el temporizador antes de navegar
                     navController.navigate(
                         Result(
                             topic,
                             difficulty,
-                            jsonAnswers
+                            jsonAnswers,
+                            timerResult.value
                         )
                     )
                 }
@@ -157,6 +160,7 @@ fun NavigationWrapper() {
             val selectedAnswer = quizzViewModel.selectedAnswer.collectAsStateWithLifecycle()
             val optColors = quizzViewModel.optionColors.collectAsStateWithLifecycle()
             val timer = quizzViewModel.timer.collectAsStateWithLifecycle()
+            val isTimeUp = quizzViewModel.isTimeUp.collectAsStateWithLifecycle()
             QuizzScreen(
                 questions.value,
                 onAnswerSelected,
@@ -170,7 +174,8 @@ fun NavigationWrapper() {
                 topic,
                 difficulty,
                 answers.value,
-                timer.value
+                timer.value,
+                isTimeUp.value
             )
         }
 

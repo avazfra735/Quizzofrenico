@@ -6,6 +6,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
+import java.util.Locale
 import javax.inject.Inject
 
 class DefaultRepository @Inject constructor(
@@ -72,7 +74,13 @@ class DefaultRepository @Inject constructor(
         }
     }
 
-    override suspend fun saveQuizz(topic: String, difficulty: String, result: Int, total: Int) {
+    override suspend fun saveQuizz(
+        topic: String,
+        difficulty: String,
+        result: Int,
+        total: Int,
+        timer: String
+    ) {
         try {
             val email =
                 auth.currentUser?.email ?: throw IllegalStateException("User not authenticated")
@@ -84,6 +92,7 @@ class DefaultRepository @Inject constructor(
                 "difficulty" to difficulty,
                 "result" to result,
                 "total" to total,
+                "timer" to timer,
                 "timestamp" to FieldValue.serverTimestamp(),
             )
             docRef.set(quizData).await()
@@ -99,12 +108,17 @@ class DefaultRepository @Inject constructor(
             val quizzes = firestore.collection("users").document(email).collection("quizzes")
                 .orderBy("timestamp").get().await()
             quizzes.documents.map { doc ->
+                val rawDate = doc.getDate("timestamp")
+                val formattedDate = rawDate?.let {
+                    SimpleDateFormat("dd-MM-yyyy, HH:mm", Locale.getDefault()).format(it)
+                } ?: "" // Formatear la fecha
                 Score(
                     topic = doc.getString("topic") ?: "",
                     difficulty = doc.getString("difficulty") ?: "",
                     score = doc.getLong("result")?.toInt() ?: 0,
                     total = doc.getLong("total")?.toInt() ?: 0,
-                    date = doc.getDate("timestamp")?.toString() ?: ""
+                    date = formattedDate,
+                    timer = doc.getString("timer") ?: ""
                 )
             }
         } catch (e: Exception) {

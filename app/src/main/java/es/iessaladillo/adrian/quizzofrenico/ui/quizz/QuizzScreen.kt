@@ -34,13 +34,14 @@ fun QuizzScreen(
     topic: String,
     difficulty: String,
     answers: Map<String, Boolean>,
-    quizTimer: String
+    quizTimer: String,
+    isTimeUp: Boolean
 ) {
     if (isLoading) {
         Dialog(onDismissRequest = {}) {
             Box(
                 modifier = Modifier
-                    .size(120.dp)
+                    .size(200.dp)
                     .background(Color.White, shape = MaterialTheme.shapes.medium),
                 contentAlignment = Alignment.Center
             ) {
@@ -50,7 +51,11 @@ fun QuizzScreen(
                 ) {
                     CircularProgressIndicator(color = Color(0xFF6a1b9a))
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("Cargando preguntas...", color = Color(0xFF6a1b9a))
+                    Text(
+                        text = "Cargando preguntas...",
+                        color = Color(0xFF6a1b9a),
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
                 }
             }
         }
@@ -58,6 +63,35 @@ fun QuizzScreen(
         Scaffold(
             topBar = { QuizzTopAppBar(currentQuestionIndex, questions.size, quizTimer) }
         ) { innerPadding ->
+            // Comprobar si el tiempo se ha agotado
+            if (isTimeUp) {
+                Dialog(onDismissRequest = {}) {
+                    Box(
+                        modifier = Modifier
+                            .size(300.dp)
+                            .background(Color.White, shape = MaterialTheme.shapes.medium),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "¡Tiempo agotado!",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Red
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Button(onClick = {
+                                navigateToResult(topic, difficulty, answers)
+                            }) {
+                                Text("Ver resultados")
+                            }
+                        }
+                    }
+                }
+            }
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -194,6 +228,7 @@ fun QuizzScreenPreview() {
         topic = "Geografía",
         difficulty = "Fácil",
         answers = emptyMap(),
-        quizTimer = "00:00"
+        quizTimer = "00:00",
+        isTimeUp = false
     )
 }

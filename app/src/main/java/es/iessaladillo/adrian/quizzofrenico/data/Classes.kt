@@ -14,7 +14,8 @@ data class Score(
     val difficulty: String,
     val score: Int,
     val total:Int,
-    val date: String
+    val date: String,
+    val timer: String
 )
 
 //Is necesary to use serializable to convert the data class to a json string
@@ -25,5 +26,6 @@ data class QuizzSettings(val topic: String, val difficulty: String)
 data class QuizzResult(
     val topic: String,
     val difficulty: String,
-    val answers: String
+    val answers: String,
+    val timer: String
 )

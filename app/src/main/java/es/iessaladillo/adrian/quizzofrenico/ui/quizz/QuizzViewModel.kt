@@ -51,11 +51,14 @@ class QuizzViewModel @Inject constructor(
     val timer: StateFlow<String>
         get() = _timer.asStateFlow()
 
+    private val _isTimeUp: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isTimeUp: StateFlow<Boolean>
+        get() = _isTimeUp.asStateFlow()
+
     private var countDownTimer: CountDownTimer? = null
 
     @SuppressLint("DefaultLocale")
     fun startTimer(durationInMillis: Long = 60000) {
-        countDownTimer?.cancel() // Cancela cualquier temporizador previo
         countDownTimer = object : CountDownTimer(durationInMillis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val seconds = millisUntilFinished / 1000
@@ -63,16 +66,26 @@ class QuizzViewModel @Inject constructor(
                 println("Tiempo restante: ${_timer.value}")
             }
 
+            // Aquí puedes manejar el evento de tiempo agotado
             override fun onFinish() {
-                _timer.value = "Tiempo agotado"
+                stopTimer()
                 println("Tiempo agotado")
-                // Aquí puedes manejar el evento de tiempo agotado
+                _isTimeUp.value = true
+                markUnasweredQuestions()
             }
         }.start()
     }
 
     fun stopTimer() {
         countDownTimer?.cancel()
+    }
+
+    private fun markUnasweredQuestions() {
+        // Marcar las preguntas no respondidas como incorrectas
+        val unanswered = _questions.value.drop(_currentQuestion.value)
+        val updatedAnswers =
+            unanswered.associate { "Pregunta ${_questions.value.indexOf(it) + 1}" to false }
+        _answers.value = _answers.value + updatedAnswers
     }
 
 
