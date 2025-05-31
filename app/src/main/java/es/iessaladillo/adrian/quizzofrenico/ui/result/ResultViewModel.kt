@@ -21,7 +21,7 @@ class ResultViewModel @Inject constructor(
     val results = savedStateHandle.toRoute<QuizzResult>()
     val answers: Map<String, Boolean> = Json.decodeFromString(results.answers)
     val score = answers.values.count { it } // Contar respuestas correctas
-    val timer = results.timer
+    val timer = if (results.timer == "00:00") "Tiempo agotado" else results.timer // Mostrar "Tiempo agotado" si el temporizador es 00:00
 
     init {
         viewModelScope.launch {

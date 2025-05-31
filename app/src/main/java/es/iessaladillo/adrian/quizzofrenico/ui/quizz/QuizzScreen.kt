@@ -35,7 +35,10 @@ fun QuizzScreen(
     difficulty: String,
     answers: Map<String, Boolean>,
     quizTimer: String,
-    isTimeUp: Boolean
+    isTimeUp: Boolean,
+    explanation: String,
+    showExplanation: Boolean,
+    onExplanationDismiss: () -> Unit
 ) {
     if (isLoading) {
         Dialog(onDismissRequest = {}) {
@@ -87,6 +90,35 @@ fun QuizzScreen(
                                 navigateToResult(topic, difficulty, answers)
                             }) {
                                 Text("Ver resultados")
+                            }
+                        }
+                    }
+                }
+            }
+            // Comprobar si se debe mostrar la explicación
+            if (showExplanation) {
+                Dialog(onDismissRequest = onExplanationDismiss) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.White, shape = MaterialTheme.shapes.medium)
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "Explicación",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                            Text(text = explanation, fontSize = 16.sp)
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Button(onClick = onExplanationDismiss) {
+                                Text("Cerrar")
                             }
                         }
                     }
@@ -191,9 +223,16 @@ fun QuizzTopAppBar(currentQuestionIndex: Int, questions: Int, quizTimer: String)
                 text = quizTimer,
                 modifier = Modifier.padding(16.dp),
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+
             )
         },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = Color(0xFF6a1b9a),
+            titleContentColor = Color.White,
+            navigationIconContentColor = Color.White
+        )
     )
 }
 
@@ -229,6 +268,9 @@ fun QuizzScreenPreview() {
         difficulty = "Fácil",
         answers = emptyMap(),
         quizTimer = "00:00",
-        isTimeUp = false
+        isTimeUp = false,
+        explanation = "Has fallado esta pregunta porque la capital de Francia es París.",
+        showExplanation = true,
+        onExplanationDismiss = {}
     )
 }

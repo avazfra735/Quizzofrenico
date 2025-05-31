@@ -47,6 +47,14 @@ class QuizzViewModel @Inject constructor(
     val answers: StateFlow<Map<String, Boolean>>
         get() = _answers.asStateFlow()
 
+    private val _showExplanation: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showExplanation: StateFlow<Boolean>
+        get() = _showExplanation.asStateFlow()
+
+    private val _explanation: MutableStateFlow<String> = MutableStateFlow("")
+    val explanation: StateFlow<String>
+        get() = _explanation.asStateFlow()
+
     private val _timer: MutableStateFlow<String> = MutableStateFlow("")
     val timer: StateFlow<String>
         get() = _timer.asStateFlow()
@@ -56,6 +64,21 @@ class QuizzViewModel @Inject constructor(
         get() = _isTimeUp.asStateFlow()
 
     private var countDownTimer: CountDownTimer? = null
+
+
+    // Retrieve the settings from the saved state handle
+    val settings = savedStateHandle.toRoute<QuizzSettings>()
+
+
+    init {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _questions.value = repository.generateQuizz(settings.topic, settings.difficulty)
+            _isLoading.value = false
+            startTimer()//Si quisieramos que el temporizador no tuviera 60seg(60000ms) podriamos pasarlo como argumento
+            println(_questions.value)
+        }
+    }
 
     @SuppressLint("DefaultLocale")
     fun startTimer(durationInMillis: Long = 60000) {
@@ -88,27 +111,27 @@ class QuizzViewModel @Inject constructor(
         _answers.value = _answers.value + updatedAnswers
     }
 
-
-    // Retrieve the settings from the saved state handle
-    val settings = savedStateHandle.toRoute<QuizzSettings>()
-
-
-    init {
-        viewModelScope.launch {
-            _isLoading.value = true
-            _questions.value = repository.generateQuizz(settings.topic, settings.difficulty)
-            _isLoading.value = false
-            startTimer()//Si quisieramos que el temporizador no tuviera 60seg(60000ms) podriamos pasarlo como argumento
-            println(_questions.value)
-        }
-    }
-
     fun onAnswerSelected(option: String) {
         // Actualizar el estado de la respuesta seleccionada
+        val currentQ = _questions.value[_currentQuestion.value]
+        val correctAnswer = currentQ.correctAnswer
+        val isCorrect = option.substringBefore(")") == correctAnswer
+
+        if (!isCorrect){
+            _explanation.value = currentQ.explanation
+            _showExplanation.value = true
+        }
+
         _selectedAnswer.value = option.substringBefore(")")
         backgroundColors(option)
         scoreUp(option)
         println(_answers.value)
+    }
+
+    // Cierra la explicación y resetea el estado
+    fun onExplanationDismiss() {
+        _showExplanation.value = false
+        _explanation.value = ""
     }
 
     fun onNextQuestion() {

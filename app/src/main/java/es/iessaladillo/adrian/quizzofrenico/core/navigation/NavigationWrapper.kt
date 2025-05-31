@@ -161,6 +161,9 @@ fun NavigationWrapper() {
             val optColors = quizzViewModel.optionColors.collectAsStateWithLifecycle()
             val timer = quizzViewModel.timer.collectAsStateWithLifecycle()
             val isTimeUp = quizzViewModel.isTimeUp.collectAsStateWithLifecycle()
+            val explanation = quizzViewModel.explanation.collectAsStateWithLifecycle()
+            val showExplanation = quizzViewModel.showExplanation.collectAsStateWithLifecycle()
+            val onExplanationDismiss = { quizzViewModel.onExplanationDismiss() }
             QuizzScreen(
                 questions.value,
                 onAnswerSelected,
@@ -175,7 +178,10 @@ fun NavigationWrapper() {
                 difficulty,
                 answers.value,
                 timer.value,
-                isTimeUp.value
+                isTimeUp.value,
+                explanation.value,
+                showExplanation.value,
+                onExplanationDismiss
             )
         }
 
