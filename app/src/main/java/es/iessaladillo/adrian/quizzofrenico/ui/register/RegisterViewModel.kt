@@ -32,11 +32,13 @@ class RegisterViewModel @Inject constructor(private val repository: Repository) 
     val isLoading: StateFlow<Boolean> get() = _isLoading.asStateFlow()
 
 
+
     fun register(email: String, password: String) {
         viewModelScope.launch {
             setLoading(true)
             repository.register(email, password)
             setLoading(false)
+
         }
     }
 

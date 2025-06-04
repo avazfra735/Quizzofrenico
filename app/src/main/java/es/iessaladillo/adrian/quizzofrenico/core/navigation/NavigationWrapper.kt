@@ -110,13 +110,17 @@ fun NavigationWrapper() {
                 { choosePlayModeViewModel.onDifficultSelected(it) }
             val difficultSelected =
                 choosePlayModeViewModel.onDifficultSelected.collectAsStateWithLifecycle()
+            val showSettings = choosePlayModeViewModel.showSettings.collectAsStateWithLifecycle()
+            val onShowSettings = { choosePlayModeViewModel.onShowSettings() }
             ChoosePlayModeScreen(
                 navigateToQuizz,
                 difficultSelected.value,
                 onDifficultSelected,
                 inputValue.value,
                 onChangeInput,
-                navigateToScores
+                navigateToScores,
+                showSettings.value,
+                onShowSettings
             )
         }
 
@@ -124,7 +128,6 @@ fun NavigationWrapper() {
             val scoresViewModel: ScoresViewModel = hiltViewModel(entry)
             val scores = scoresViewModel.scores.collectAsStateWithLifecycle()
             val navigateBack: () -> Unit = { navController.popBackStack() }
-            //val onDeleteScore: (String) -> Unit = { scoresViewModel.deleteScore(it) }
             ScoresScreen(scores.value, navigateBack)
 
         }

@@ -70,6 +70,7 @@ class DefaultRepository @Inject constructor(
             auth.createUserWithEmailAndPassword(email, password).await()
             println(auth.currentUser)
         } catch (e: Exception) {
+            auth.signOut() // Cerrar sesión si hay error
             println("Error during registration: ${e.message}")
         }
     }
