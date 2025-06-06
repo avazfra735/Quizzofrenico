@@ -3,6 +3,7 @@ package es.iessaladillo.adrian.quizzofrenico.ui.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import es.iessaladillo.adrian.quizzofrenico.data.AuthResult
 import es.iessaladillo.adrian.quizzofrenico.data.Repository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -53,16 +54,15 @@ class LoginViewModel @Inject constructor(
 
     fun login(onLoginSucces: () -> Unit) {
         viewModelScope.launch {
-            try {
-                setLoading(true)
-                repository.authenticate(_email.value, _password.value)
-                setLoading(false)
-                if (repository.isUserLoggedIn()) onLoginSucces() else _errorMessage.value =
-                    "Error en el inicio de sesión, comprueba los datos"
-
-            } catch (e: Exception) {
-                println("Error: ${e.message}")
+            setLoading(true)
+            when (val result = repository.authenticate(_email.value, _password.value)) {
+                is AuthResult.Success -> {
+                    _errorMessage.value = ""
+                    onLoginSucces()
+                }
+                is AuthResult.Error -> _errorMessage.value = result.message
             }
+            setLoading(false)
         }
     }
 }

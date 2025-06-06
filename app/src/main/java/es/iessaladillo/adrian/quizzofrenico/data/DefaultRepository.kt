@@ -3,6 +3,11 @@ package es.iessaladillo.adrian.quizzofrenico.data
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.GenerateContentResponse
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthEmailException
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -55,23 +60,38 @@ class DefaultRepository @Inject constructor(
         return auth.currentUser != null
     }
 
-    override suspend fun authenticate(email: String, password: String) {
-        try {
+    override suspend fun authenticate(email: String, password: String): AuthResult {
+        return try {
             auth.signInWithEmailAndPassword(email, password).await()
             println(auth.currentUser)
+            AuthResult.Success
         } catch (e: Exception) {
             auth.signOut() // Cerrar sesión si hay error
             println("Error during authentication: ${e.message}")
+            AuthResult.Error(mapFirebaseAuthError(e))
         }
     }
 
-    override suspend fun register(email: String, password: String) {
-        try {
+    override suspend fun register(email: String, password: String): AuthResult {
+        return try {
             auth.createUserWithEmailAndPassword(email, password).await()
             println(auth.currentUser)
+            AuthResult.Success
         } catch (e: Exception) {
             auth.signOut() // Cerrar sesión si hay error
             println("Error during registration: ${e.message}")
+            AuthResult.Error(mapFirebaseAuthError(e))
+        }
+    }
+
+    fun mapFirebaseAuthError(e: Exception): String {
+        return when (e) {
+            is FirebaseAuthWeakPasswordException -> "La contraseña es demasiado débil."
+            is FirebaseAuthUserCollisionException -> "Este correo ya está registrado."
+            is FirebaseAuthInvalidUserException -> "El usuario no existe o fue deshabilitado."
+            is FirebaseAuthEmailException -> "El formato del correo electrónico no es válido."
+            is FirebaseAuthInvalidCredentialsException -> "Las credenciales son inválidas."
+            else -> e.message ?: "Ocurrió un error desconocido."
         }
     }
 

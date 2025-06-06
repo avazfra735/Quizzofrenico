@@ -18,6 +18,11 @@ data class Score(
     val timer: String
 )
 
+sealed class AuthResult{
+    object Success : AuthResult()
+    data class Error(val message:String): AuthResult()
+}
+
 //Is necesary to use serializable to convert the data class to a json string
 @Serializable
 data class QuizzSettings(val topic: String, val difficulty: String)

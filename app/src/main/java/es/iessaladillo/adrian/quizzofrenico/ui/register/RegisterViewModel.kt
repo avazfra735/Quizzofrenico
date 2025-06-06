@@ -3,6 +3,7 @@ package es.iessaladillo.adrian.quizzofrenico.ui.register
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import es.iessaladillo.adrian.quizzofrenico.data.AuthResult
 import es.iessaladillo.adrian.quizzofrenico.data.Repository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,11 +33,13 @@ class RegisterViewModel @Inject constructor(private val repository: Repository) 
     val isLoading: StateFlow<Boolean> get() = _isLoading.asStateFlow()
 
 
-
     fun register(email: String, password: String) {
         viewModelScope.launch {
             setLoading(true)
-            repository.register(email, password)
+            when (val result = repository.register(email, password)) {
+                is AuthResult.Success -> _errorMessage.value = ""
+                is AuthResult.Error -> _errorMessage.value = result.message
+            }
             setLoading(false)
 
         }
