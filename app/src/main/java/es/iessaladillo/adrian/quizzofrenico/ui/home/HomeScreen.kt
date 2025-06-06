@@ -8,7 +8,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,16 +28,16 @@ fun HomeScreen(
                     Text(
                         text = stringResource(R.string.app_name),
                         style = MaterialTheme.typography.headlineLarge,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         textAlign = TextAlign.Center
                     )
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFF6a1b9a) // Color del AppBar
+                    containerColor = MaterialTheme.colorScheme.primary
                 )
             )
         },
-        containerColor = Color.White // Fondo de la pantalla
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -52,7 +51,7 @@ fun HomeScreen(
             Text(
                 text = stringResource(R.string.welcome_to_quizzofrenico),
                 style = MaterialTheme.typography.headlineMedium,
-                color = Color(0xFF6a1b9a),
+                color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
@@ -60,7 +59,7 @@ fun HomeScreen(
             // Botón de Login
             Button(
                 onClick = login,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6a1b9a)),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)
@@ -68,32 +67,34 @@ fun HomeScreen(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.Login,
                     contentDescription = null,
-                    tint = Color.White,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = stringResource(R.string.login),
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
 
             // Botón de Registro
             OutlinedButton(
                 onClick = register,
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF6a1b9a)),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = MaterialTheme.colorScheme.primary
+                ),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
                     imageVector = Icons.Default.PersonAdd,
                     contentDescription = null,
-                    tint = Color(0xFF6a1b9a),
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = stringResource(R.string.register),
-                    color = Color(0xFF6a1b9a)
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }

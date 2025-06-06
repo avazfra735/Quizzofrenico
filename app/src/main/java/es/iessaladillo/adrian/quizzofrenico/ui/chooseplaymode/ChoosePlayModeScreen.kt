@@ -8,12 +8,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import es.iessaladillo.adrian.quizzofrenico.ui.theme.QuizzofrenicoTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,7 +43,7 @@ fun ChoosePlayModeScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color.White, shape = MaterialTheme.shapes.medium)
+                            .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium)
                             .padding(16.dp)
                     ) {
                         Column(
@@ -54,7 +54,7 @@ fun ChoosePlayModeScreen(
                                 text = "Ajustes",
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Black
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Button(
                                 onClick = {
@@ -86,7 +86,8 @@ fun ChoosePlayModeScreen(
             }
             Text(
                 text = "Introduce el tema del quiz",
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
@@ -102,7 +103,6 @@ fun ChoosePlayModeScreen(
                 Text(text = "Generar quiz")
             }
         }
-
     }
 }
 
@@ -110,14 +110,18 @@ fun ChoosePlayModeScreen(
 private fun DifficultyButton(
     text: String, isSelected: Boolean, onClick: () -> Unit
 ) {
+    val colors = if (isSelected) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.secondary.copy(alpha = .8f)
+    }
+
     Button(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) Color.Blue else Color.Gray
-        ),
+        colors = ButtonDefaults.buttonColors(containerColor = colors)
     ) {
-        Text(text = text)
+        Text(text = text, color = MaterialTheme.colorScheme.onPrimary)
     }
 }
 
@@ -125,18 +129,21 @@ private fun DifficultyButton(
 @Composable
 fun ChoosePlayModeTopBar(onShowSettings: () -> Unit) {
     CenterAlignedTopAppBar(
-        title = { Text(text = "Elegir dificultad") },
+        title = {
+            Text(
+                text = "Elegir dificultad",
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = Color(0xFF6a1b9a),
-            titleContentColor = Color.White,
-            navigationIconContentColor = Color.White
+            containerColor = MaterialTheme.colorScheme.primary
         ),
         actions = {
             IconButton(onClick = onShowSettings) {
                 Icon(
                     imageVector = Icons.Default.Settings,
                     contentDescription = "Settings",
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
@@ -146,14 +153,16 @@ fun ChoosePlayModeTopBar(onShowSettings: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun ChoosePlayModePreview() {
-    ChoosePlayModeScreen(
-        navigateToQuizz = { _, _ -> },
-        "",
-        onDifficultSelected = {},
-        "",
-        onChangeInput = {},
-        navigateToScores = { },
-        showSettings = true,
-        onShowSettings = { }
-    )
+    QuizzofrenicoTheme {
+        ChoosePlayModeScreen(
+            navigateToQuizz = { _, _ -> },
+            difficultSelected = "Fácil",
+            onDifficultSelected = {},
+            inputValue = "",
+            onChangeInput = {},
+            navigateToScores = {},
+            showSettings = true,
+            onShowSettings = {}
+        )
+    }
 }

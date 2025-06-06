@@ -45,19 +45,15 @@ fun QuizzScreen(
             Box(
                 modifier = Modifier
                     .size(200.dp)
-                    .background(Color.White, shape = MaterialTheme.shapes.medium),
+                    .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium),
                 contentAlignment = Alignment.Center
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    CircularProgressIndicator(color = Color(0xFF6a1b9a))
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "Cargando preguntas...",
-                        color = Color(0xFF6a1b9a),
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -66,24 +62,20 @@ fun QuizzScreen(
         Scaffold(
             topBar = { QuizzTopAppBar(currentQuestionIndex, questions.size, quizTimer) }
         ) { innerPadding ->
-            // Comprobar si el tiempo se ha agotado
             if (isTimeUp) {
                 Dialog(onDismissRequest = {}) {
                     Box(
                         modifier = Modifier
                             .size(300.dp)
-                            .background(Color.White, shape = MaterialTheme.shapes.medium),
+                            .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium),
                         contentAlignment = Alignment.Center
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
                                 text = "¡Tiempo agotado!",
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Red
+                                color = MaterialTheme.colorScheme.error
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Button(onClick = {
@@ -95,27 +87,29 @@ fun QuizzScreen(
                     }
                 }
             }
-            // Comprobar si se debe mostrar la explicación
+
             if (showExplanation) {
                 Dialog(onDismissRequest = onExplanationDismiss) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color.White, shape = MaterialTheme.shapes.medium)
+                            .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium)
                             .padding(16.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
                                 text = "Explicación",
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
-                            Text(text = explanation, fontSize = 16.sp)
+                            Text(
+                                text = explanation,
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
                             Spacer(modifier = Modifier.height(16.dp))
                             Button(onClick = onExplanationDismiss) {
                                 Text("Cerrar")
@@ -124,6 +118,7 @@ fun QuizzScreen(
                     }
                 }
             }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -132,16 +127,15 @@ fun QuizzScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                // Mostrar la pregunta actual
                 val currentQuestion = questions[currentQuestionIndex]
                 Text(
                     text = currentQuestion.question,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                // Mostrar las opciones de respuesta
                 currentQuestion.options.forEach { option ->
                     Row(
                         modifier = Modifier
@@ -154,40 +148,32 @@ fun QuizzScreen(
                             .padding(vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        println(optColors)
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(8.dp)) // Bordes redondeados
-                                .background(
-                                    optColors[option] ?: Color.Transparent
-                                ) // Color de fondo según la respuesta
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(optColors[option] ?: MaterialTheme.colorScheme.surface)
                                 .border(
                                     2.dp,
-                                    Color.Gray,
+                                    MaterialTheme.colorScheme.outline,
                                     RoundedCornerShape(8.dp)
-                                ) // Borde alrededor del bloque
+                                )
                                 .clickable(enabled = selectedAnswer.isEmpty()) {
-                                    onAnswerSelected(
-                                        option
-                                    )
+                                    onAnswerSelected(option)
                                 }
-                                .padding(16.dp) // Espaciado interno
+                                .padding(16.dp)
                         ) {
                             Text(
                                 text = option,
                                 fontSize = 16.sp,
-                                modifier = Modifier.align(Alignment.CenterStart)
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
-
-                        Spacer(modifier = Modifier.height(8.dp)) // Espaciado entre opciones
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Botón para avanzar o finalizar
                 Button(
                     onClick = {
                         if (isLastQuestion) {
@@ -198,7 +184,6 @@ fun QuizzScreen(
                     },
                     modifier = Modifier.fillMaxWidth(),
                     enabled = selectedAnswer.isNotEmpty()
-
                 ) {
                     Text(
                         text = if (isLastQuestion) "Finalizar Quiz" else "Siguiente Pregunta",
@@ -209,32 +194,33 @@ fun QuizzScreen(
             }
         }
     }
-
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuizzTopAppBar(currentQuestionIndex: Int, questions: Int, quizTimer: String) {
     CenterAlignedTopAppBar(
-        title = { Text(text = "Quiz - Pregunta ${currentQuestionIndex + 1}/${questions}") },
+        title = {
+            Text(
+                text = "Quiz - Pregunta ${currentQuestionIndex + 1}/$questions",
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        },
         actions = {
             Text(
                 text = quizTimer,
                 modifier = Modifier.padding(16.dp),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
-
+                color = MaterialTheme.colorScheme.onPrimary
             )
         },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = Color(0xFF6a1b9a),
-            titleContentColor = Color.White,
-            navigationIconContentColor = Color.White
+            containerColor = MaterialTheme.colorScheme.primary
         )
     )
 }
+
 
 @Preview(showBackground = true)
 @Composable
@@ -270,7 +256,7 @@ fun QuizzScreenPreview() {
         quizTimer = "00:00",
         isTimeUp = false,
         explanation = "Has fallado esta pregunta porque la capital de Francia es París.",
-        showExplanation = true,
+        showExplanation = false,
         onExplanationDismiss = {}
     )
 }

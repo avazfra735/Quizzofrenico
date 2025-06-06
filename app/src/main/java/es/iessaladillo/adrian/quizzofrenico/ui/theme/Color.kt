@@ -2,10 +2,9 @@ package es.iessaladillo.adrian.quizzofrenico.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
-
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val BlueLight = Color(0xFF8DD6F6)
+val BlueSky = Color(0xFF8CD7F6)
+val PurpleSoft = Color(0xFF999DDD)
+val Coral = Color(0xFFF99C8A)
+val YellowPastel = Color(0xFFFEE28E)
+val BlueVibrant = Color(0xFF65D0F4)

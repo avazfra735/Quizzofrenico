@@ -12,7 +12,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -38,23 +37,24 @@ fun RegisterScreen(
     errorMessage: String,
     onErrorMessageChange: (String) -> Unit,
     onRegister: (email: String, password: String) -> Unit,
-    navigateToLogin: () -> Unit, isLoading: Boolean
+    navigateToLogin: () -> Unit,
+    isLoading: Boolean
 ) {
     if (isLoading) {
         Dialog(onDismissRequest = {}) {
             Box(
                 modifier = Modifier
                     .size(120.dp)
-                    .background(Color.White, shape = MaterialTheme.shapes.medium),
+                    .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium),
                 contentAlignment = Alignment.Center
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    CircularProgressIndicator(color = Color(0xFF6a1b9a))
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("Cargando...", color = Color(0xFF6a1b9a))
+                    Text("Cargando...", color = MaterialTheme.colorScheme.primary)
                 }
             }
         }
@@ -67,16 +67,16 @@ fun RegisterScreen(
                     Text(
                         text = stringResource(R.string.registerTitle),
                         style = MaterialTheme.typography.headlineLarge,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         textAlign = TextAlign.Center
                     )
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFF6a1b9a)
+                    containerColor = MaterialTheme.colorScheme.primary
                 )
             )
         },
-        containerColor = Color.White
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -86,7 +86,6 @@ fun RegisterScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Campo de nombre de usuario
             OutlinedTextField(
                 value = email,
                 onValueChange = onChangeEmail,
@@ -94,15 +93,14 @@ fun RegisterScreen(
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF6a1b9a),
-                    unfocusedBorderColor = Color.Gray
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
                 ),
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo de contraseña
             OutlinedTextField(
                 value = password,
                 onValueChange = onChangePassword,
@@ -119,15 +117,14 @@ fun RegisterScreen(
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF6a1b9a),
-                    unfocusedBorderColor = Color.Gray
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
                 ),
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo de confirmación de contraseña
             OutlinedTextField(
                 value = confPassword,
                 onValueChange = onChangeConfPassword,
@@ -136,24 +133,22 @@ fun RegisterScreen(
                 visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF6a1b9a),
-                    unfocusedBorderColor = Color.Gray
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
                 ),
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Mensaje de error
             if (errorMessage.isNotEmpty()) {
                 Text(
                     text = errorMessage,
-                    color = Color.Red,
+                    color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
             }
 
-            // Botón de registro
             Button(
                 onClick = {
                     if (password == confPassword && email.isNotEmpty() && password.isNotEmpty()) {
@@ -162,28 +157,26 @@ fun RegisterScreen(
                         onErrorMessageChange("Las contraseñas no coinciden o los campos están vacíos")
                     }
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6a1b9a)),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     text = stringResource(R.string.register),
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Enlace para iniciar sesión
             TextButton(onClick = navigateToLogin) {
                 Text(
                     text = stringResource(R.string.already_have_account),
-                    color = Color(0xFF6a1b9a)
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
