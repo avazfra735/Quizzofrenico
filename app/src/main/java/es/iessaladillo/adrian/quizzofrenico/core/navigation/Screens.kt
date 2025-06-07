@@ -18,7 +18,7 @@ object ChoosePlayMode
 object Scores
 
 @Serializable
-data class Quizz(val topic: String, val difficulty: String)
+data class Quizz(val topic: String, val difficulty: String, val time: Int)
 
 @Serializable
 data class Result(val topic: String, val difficulty: String, val answers: String,val timer : String)

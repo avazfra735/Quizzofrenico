@@ -75,7 +75,7 @@ class QuizzViewModel @Inject constructor(
             _isLoading.value = true
             _questions.value = repository.generateQuizz(settings.topic, settings.difficulty)
             _isLoading.value = false
-            startTimer()//Si quisieramos que el temporizador no tuviera 60seg(60000ms) podriamos pasarlo como argumento
+            startTimer(mapTimeToMillis(settings.time))//Si quisieramos que el temporizador no tuviera 60seg(60000ms) podriamos pasarlo como argumento
             println(_questions.value)
         }
     }
@@ -103,6 +103,15 @@ class QuizzViewModel @Inject constructor(
         countDownTimer?.cancel()
     }
 
+    private fun mapTimeToMillis(time: Int): Long {
+        return when (time) {
+            1 -> 60000L
+            5 -> 300000L
+            10 -> 600000L
+            else -> 60000L // Valor por defecto si no coincide con ninguna opción
+        }
+    }
+
     private fun markUnasweredQuestions() {
         // Marcar las preguntas no respondidas como incorrectas
         val unanswered = _questions.value.drop(_currentQuestion.value)
@@ -117,7 +126,7 @@ class QuizzViewModel @Inject constructor(
         val correctAnswer = currentQ.correctAnswer
         val isCorrect = option.substringBefore(")") == correctAnswer
 
-        if (!isCorrect){
+        if (!isCorrect) {
             _explanation.value = currentQ.explanation
             _showExplanation.value = true
         }

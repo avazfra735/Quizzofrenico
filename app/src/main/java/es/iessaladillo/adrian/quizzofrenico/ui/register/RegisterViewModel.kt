@@ -33,11 +33,14 @@ class RegisterViewModel @Inject constructor(private val repository: Repository) 
     val isLoading: StateFlow<Boolean> get() = _isLoading.asStateFlow()
 
 
-    fun register(email: String, password: String) {
+    fun register(onRegisterSuccess: () -> Unit) {
         viewModelScope.launch {
             setLoading(true)
-            when (val result = repository.register(email, password)) {
-                is AuthResult.Success -> _errorMessage.value = ""
+            when (val result = repository.register(_email.value, _password.value)) {
+                is AuthResult.Success -> {
+                    _errorMessage.value = ""
+                    onRegisterSuccess()
+                }
                 is AuthResult.Error -> _errorMessage.value = result.message
             }
             setLoading(false)

@@ -36,7 +36,7 @@ fun RegisterScreen(
     onPasswordVisible: () -> Unit,
     errorMessage: String,
     onErrorMessageChange: (String) -> Unit,
-    onRegister: (email: String, password: String) -> Unit,
+    onRegister: () -> Unit,
     navigateToLogin: () -> Unit,
     isLoading: Boolean
 ) {
@@ -45,7 +45,10 @@ fun RegisterScreen(
             Box(
                 modifier = Modifier
                     .size(120.dp)
-                    .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium),
+                    .background(
+                        MaterialTheme.colorScheme.surface,
+                        shape = MaterialTheme.shapes.medium
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Column(
@@ -152,7 +155,7 @@ fun RegisterScreen(
             Button(
                 onClick = {
                     if (password == confPassword && email.isNotEmpty() && password.isNotEmpty()) {
-                        onRegister(email, password)
+                        onRegister()
                     } else {
                         onErrorMessageChange("Las contraseñas no coinciden o los campos están vacíos")
                     }
@@ -193,7 +196,7 @@ fun RegisterScreenPreview() {
             onPasswordVisible = {},
             errorMessage = "",
             onErrorMessageChange = {},
-            onRegister = { _, _ -> },
+            onRegister = {  },
             navigateToLogin = {},
             isLoading = false
         )

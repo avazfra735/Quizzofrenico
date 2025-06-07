@@ -18,14 +18,16 @@ import es.iessaladillo.adrian.quizzofrenico.ui.theme.QuizzofrenicoTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChoosePlayModeScreen(
-    navigateToQuizz: (String, String) -> Unit,
+    navigateToQuizz: (String, String, Int) -> Unit,
     difficultSelected: String,
     onDifficultSelected: (String) -> Unit,
     inputValue: String,
     onChangeInput: (String) -> Unit,
     navigateToScores: () -> Unit,
     showSettings: Boolean,
-    onShowSettings: () -> Unit
+    onShowSettings: () -> Unit,
+    timeSelected: Int,
+    onTimeSelected: (Int) -> Unit
 ) {
     Scaffold(
         topBar = { ChoosePlayModeTopBar(onShowSettings) }
@@ -43,7 +45,10 @@ fun ChoosePlayModeScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium)
+                            .background(
+                                MaterialTheme.colorScheme.surface,
+                                shape = MaterialTheme.shapes.medium
+                            )
                             .padding(16.dp)
                     ) {
                         Column(
@@ -65,6 +70,12 @@ fun ChoosePlayModeScreen(
                             ) {
                                 Text("Ver resultados anteriores")
                             }
+                            Text(
+                                text = "Selecciona la dificultad",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
                             DifficultyButton(
                                 text = "Fácil",
                                 isSelected = difficultSelected == "Fácil",
@@ -79,6 +90,28 @@ fun ChoosePlayModeScreen(
                                 text = "Difícil",
                                 isSelected = difficultSelected == "Difícil",
                                 onClick = { onDifficultSelected("Difícil") }
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = "Selecciona el tiempo",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            TimeButton(
+                                text = "1 min",
+                                isSelected = timeSelected == 1,
+                                onClick = { onTimeSelected(1) }
+                            )
+                            TimeButton(
+                                text = "5 min",
+                                isSelected = timeSelected == 5,
+                                onClick = { onTimeSelected(5) }
+                            )
+                            TimeButton(
+                                text = "10 min",
+                                isSelected = timeSelected == 10,
+                                onClick = { onTimeSelected(10) }
                             )
                         }
                     }
@@ -99,10 +132,32 @@ fun ChoosePlayModeScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { navigateToQuizz(inputValue, difficultSelected) }) {
+            Button(
+                onClick = { navigateToQuizz(inputValue, difficultSelected, timeSelected) },
+                enabled = difficultSelected.isNotEmpty() && inputValue.isNotEmpty() && timeSelected > 0,
+            ) {
                 Text(text = "Generar quiz")
             }
         }
+    }
+}
+
+@Composable
+private fun TimeButton(
+    text: String, isSelected: Boolean, onClick: () -> Unit
+) {
+    val colors = if (isSelected) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.secondary.copy(alpha = .8f)
+    }
+
+    Button(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        colors = ButtonDefaults.buttonColors(containerColor = colors)
+    ) {
+        Text(text = text, color = MaterialTheme.colorScheme.onPrimary)
     }
 }
 
@@ -155,14 +210,16 @@ fun ChoosePlayModeTopBar(onShowSettings: () -> Unit) {
 fun ChoosePlayModePreview() {
     QuizzofrenicoTheme {
         ChoosePlayModeScreen(
-            navigateToQuizz = { _, _ -> },
+            navigateToQuizz = { _, _, _ -> },
             difficultSelected = "Fácil",
             onDifficultSelected = {},
             inputValue = "",
             onChangeInput = {},
             navigateToScores = {},
             showSettings = true,
-            onShowSettings = {}
+            onShowSettings = {},
+            timeSelected = 1,
+            onTimeSelected = {}
         )
     }
 }

@@ -13,19 +13,19 @@ data class Score(
     val topic: String,
     val difficulty: String,
     val score: Int,
-    val total:Int,
+    val total: Int,
     val date: String,
     val timer: String
 )
 
-sealed class AuthResult{
+sealed class AuthResult {
     object Success : AuthResult()
-    data class Error(val message:String): AuthResult()
+    data class Error(val message: String) : AuthResult()
 }
 
 //Is necesary to use serializable to convert the data class to a json string
 @Serializable
-data class QuizzSettings(val topic: String, val difficulty: String)
+data class QuizzSettings(val topic: String, val difficulty: String, val time: Int)
 
 @Serializable
 data class QuizzResult(
