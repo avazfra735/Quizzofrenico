@@ -38,14 +38,48 @@ fun QuizzScreen(
     isTimeUp: Boolean,
     explanation: String,
     showExplanation: Boolean,
-    onExplanationDismiss: () -> Unit
+    onExplanationDismiss: () -> Unit,
+    error: Boolean,
+    onErrorDialogDismiss: () -> Unit
 ) {
+    if (error) {
+        Dialog(onDismissRequest = onErrorDialogDismiss) {
+            Box(
+                modifier = Modifier
+                    .size(300.dp)
+                    .background(
+                        MaterialTheme.colorScheme.surface,
+                        shape = MaterialTheme.shapes.medium
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "Ha ocurrido un error al generar las preguntas. Por favor, inténtalo de nuevo y compruebe su conexion.",
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.error,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(onClick = onErrorDialogDismiss) {
+                        Text("Volver")
+                    }
+                }
+            }
+        }
+        return
+    }
+
     if (isLoading) {
         Dialog(onDismissRequest = {}) {
             Box(
                 modifier = Modifier
                     .size(200.dp)
-                    .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium),
+                    .background(
+                        MaterialTheme.colorScheme.surface,
+                        shape = MaterialTheme.shapes.medium
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -67,7 +101,10 @@ fun QuizzScreen(
                     Box(
                         modifier = Modifier
                             .size(300.dp)
-                            .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium),
+                            .background(
+                                MaterialTheme.colorScheme.surface,
+                                shape = MaterialTheme.shapes.medium
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -93,7 +130,10 @@ fun QuizzScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium)
+                            .background(
+                                MaterialTheme.colorScheme.surface,
+                                shape = MaterialTheme.shapes.medium
+                            )
                             .padding(16.dp),
                         contentAlignment = Alignment.Center
                     ) {
@@ -257,6 +297,9 @@ fun QuizzScreenPreview() {
         isTimeUp = false,
         explanation = "Has fallado esta pregunta porque la capital de Francia es París.",
         showExplanation = false,
-        onExplanationDismiss = {}
+        onExplanationDismiss = {},
+        error = true,
+        onErrorDialogDismiss = {}
     )
 }
+

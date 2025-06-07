@@ -51,163 +51,168 @@ fun NavigationWrapper() {
             val onShowPassword = { registerViewModel.onPasswordVisible() }
             val onErrorMessageChange: (String) -> Unit =
                 { registerViewModel.onErrorMessageChange(it) }
-            val onRegister = { registerViewModel.register { navController.navigate(ChoosePlayMode) } }
+            val onRegister =
+                { registerViewModel.register { navController.navigate(ChoosePlayMode) } }
 
-        RegisterScreen(
-            email.value, onChangeEmail,
-            password.value, onChangePassword,
-            confPassword.value, onChangeConfPassword,
-            showPassword.value, onShowPassword,
-            errorMessage.value, onErrorMessageChange,
-            onRegister, navigateToLogin, isLoading.value
-        )
-    }
-
-    composable<Login> { entry ->
-        val loginViewModel: LoginViewModel = hiltViewModel(entry)
-        val navigateToRegister = {
-            navController.popBackStack()
-            navController.navigate(Register)
+            RegisterScreen(
+                email.value, onChangeEmail,
+                password.value, onChangePassword,
+                confPassword.value, onChangeConfPassword,
+                showPassword.value, onShowPassword,
+                errorMessage.value, onErrorMessageChange,
+                onRegister, navigateToLogin, isLoading.value
+            )
         }
-        val email = loginViewModel.email.collectAsStateWithLifecycle()
-        val password = loginViewModel.password.collectAsStateWithLifecycle()
-        val authenticate =
-            { loginViewModel.login { navController.navigate(ChoosePlayMode) } }
-        val onChangeEmail: (String) -> Unit = { loginViewModel.onEmailChange(it) }
-        val onChangePassword: (String) -> Unit = { loginViewModel.onPasswordChange(it) }
-        val showPassword = loginViewModel.showPassword.collectAsStateWithLifecycle()
-        val errorMessage = loginViewModel.errorMessage.collectAsStateWithLifecycle()
-        val onShowPassword = { loginViewModel.togglePasswordVisibility() }
-        val onErrorMessageChange: (String) -> Unit = { loginViewModel.errorMessage(it) }
-        val isLoading = loginViewModel.isLoading.collectAsStateWithLifecycle()
-        LoginScreen(
-            email.value,
-            password.value,
-            authenticate,
-            navigateToRegister,
-            onChangeEmail,
-            onChangePassword,
-            showPassword.value,
-            errorMessage.value,
-            onShowPassword,
-            onErrorMessageChange,
-            isLoading.value
-        )
-    }
 
-    composable<ChoosePlayMode> { entry ->
-        val choosePlayModeViewModel: ChoosePlayModeViewModel = hiltViewModel(entry)
-        val navigateToQuizz: (String, String, Int) -> Unit = { topic, difficulty, time ->
-            navController.navigate(Quizz(topic, difficulty, time))
-        }
-        val navigateToScores: () -> Unit = {
-            navController.navigate(Scores)
-        }
-        val inputValue = choosePlayModeViewModel.inputValue.collectAsStateWithLifecycle()
-        val onChangeInput: (String) -> Unit = { choosePlayModeViewModel.onChangeInput(it) }
-        val onDifficultSelected: (String) -> Unit =
-            { choosePlayModeViewModel.onDifficultSelected(it) }
-        val difficultSelected =
-            choosePlayModeViewModel.onDifficultSelected.collectAsStateWithLifecycle()
-        val showSettings = choosePlayModeViewModel.showSettings.collectAsStateWithLifecycle()
-        val onShowSettings = { choosePlayModeViewModel.onShowSettings() }
-        val time = choosePlayModeViewModel.time.collectAsStateWithLifecycle()
-        val onTimeSelected: (Int) -> Unit =
-            { choosePlayModeViewModel.onTimeSelected(it) }
-        ChoosePlayModeScreen(
-            navigateToQuizz,
-            difficultSelected.value,
-            onDifficultSelected,
-            inputValue.value,
-            onChangeInput,
-            navigateToScores,
-            showSettings.value,
-            onShowSettings,
-            time.value,
-            onTimeSelected
-        )
-    }
-
-    composable<Scores> { entry ->
-        val scoresViewModel: ScoresViewModel = hiltViewModel(entry)
-        val scores = scoresViewModel.scores.collectAsStateWithLifecycle()
-        val navigateBack: () -> Unit = { navController.popBackStack() }
-        ScoresScreen(scores.value, navigateBack)
-
-    }
-
-    composable<Quizz> { entry ->
-        val quizzViewModel: QuizzViewModel = hiltViewModel(entry)
-        val topic = quizzViewModel.settings.topic
-        val difficulty = quizzViewModel.settings.difficulty
-        val answers = quizzViewModel.answers.collectAsStateWithLifecycle()
-        val timerResult = quizzViewModel.timer.collectAsStateWithLifecycle()
-        //Tenemos que pasar el mapa a String porque ha dia de hoy solo toma valores simples
-        val navigateToResult: (String, String, Map<String, Boolean>) -> Unit =
-            { topic, difficulty, answers ->
-                val jsonAnswers = Json.encodeToString(answers)
-                quizzViewModel.stopTimer() // Detener el temporizador antes de navegar
-                navController.navigate(
-                    Result(
-                        topic,
-                        difficulty,
-                        jsonAnswers,
-                        timerResult.value
-                    )
-                )
+        composable<Login> { entry ->
+            val loginViewModel: LoginViewModel = hiltViewModel(entry)
+            val navigateToRegister = {
+                navController.popBackStack()
+                navController.navigate(Register)
             }
-        val questions = quizzViewModel.questions.collectAsStateWithLifecycle()
-        val currentQuestionIndex = quizzViewModel.currentQuestion.collectAsStateWithLifecycle()
-        val onAnswerSelected: (String) -> Unit = { answer ->
-            quizzViewModel.onAnswerSelected(answer)
+            val email = loginViewModel.email.collectAsStateWithLifecycle()
+            val password = loginViewModel.password.collectAsStateWithLifecycle()
+            val authenticate =
+                { loginViewModel.login { navController.navigate(ChoosePlayMode) } }
+            val onChangeEmail: (String) -> Unit = { loginViewModel.onEmailChange(it) }
+            val onChangePassword: (String) -> Unit = { loginViewModel.onPasswordChange(it) }
+            val showPassword = loginViewModel.showPassword.collectAsStateWithLifecycle()
+            val errorMessage = loginViewModel.errorMessage.collectAsStateWithLifecycle()
+            val onShowPassword = { loginViewModel.togglePasswordVisibility() }
+            val onErrorMessageChange: (String) -> Unit = { loginViewModel.errorMessage(it) }
+            val isLoading = loginViewModel.isLoading.collectAsStateWithLifecycle()
+            LoginScreen(
+                email.value,
+                password.value,
+                authenticate,
+                navigateToRegister,
+                onChangeEmail,
+                onChangePassword,
+                showPassword.value,
+                errorMessage.value,
+                onShowPassword,
+                onErrorMessageChange,
+                isLoading.value
+            )
         }
-        val onNextQuestion = { quizzViewModel.onNextQuestion() }
-        val isLastQuestion = quizzViewModel.isLastQuestion()
-        val isLoading = quizzViewModel.isLoading.collectAsStateWithLifecycle()
-        val selectedAnswer = quizzViewModel.selectedAnswer.collectAsStateWithLifecycle()
-        val optColors = quizzViewModel.optionColors.collectAsStateWithLifecycle()
-        val timer = quizzViewModel.timer.collectAsStateWithLifecycle()
-        val isTimeUp = quizzViewModel.isTimeUp.collectAsStateWithLifecycle()
-        val explanation = quizzViewModel.explanation.collectAsStateWithLifecycle()
-        val showExplanation = quizzViewModel.showExplanation.collectAsStateWithLifecycle()
-        val onExplanationDismiss = { quizzViewModel.onExplanationDismiss() }
-        QuizzScreen(
-            questions.value,
-            onAnswerSelected,
-            onNextQuestion,
-            currentQuestionIndex.value,
-            isLastQuestion,
-            navigateToResult,
-            isLoading.value,
-            selectedAnswer.value,
-            optColors.value,
-            topic,
-            difficulty,
-            answers.value,
-            timer.value,
-            isTimeUp.value,
-            explanation.value,
-            showExplanation.value,
-            onExplanationDismiss
-        )
-    }
 
-    composable<Result> { entry ->
-        val resultViewModel: ResultViewModel = hiltViewModel(entry)
-        val navigateToChoosePlayMode: () -> Unit =
-            { navController.popBackStack(ChoosePlayMode, false) }
-        val topic = resultViewModel.results.topic
-        val difficulty = resultViewModel.results.difficulty
-        val answers = resultViewModel.answers
-        ResultScreen(
-            topic,
-            difficulty,
-            answers,
-            navigateToChoosePlayMode
-        )
-    }
+        composable<ChoosePlayMode> { entry ->
+            val choosePlayModeViewModel: ChoosePlayModeViewModel = hiltViewModel(entry)
+            val navigateToQuizz: (String, String, Int) -> Unit = { topic, difficulty, time ->
+                navController.navigate(Quizz(topic, difficulty, time))
+            }
+            val navigateToScores: () -> Unit = {
+                navController.navigate(Scores)
+            }
+            val inputValue = choosePlayModeViewModel.inputValue.collectAsStateWithLifecycle()
+            val onChangeInput: (String) -> Unit = { choosePlayModeViewModel.onChangeInput(it) }
+            val onDifficultSelected: (String) -> Unit =
+                { choosePlayModeViewModel.onDifficultSelected(it) }
+            val difficultSelected =
+                choosePlayModeViewModel.onDifficultSelected.collectAsStateWithLifecycle()
+            val showSettings = choosePlayModeViewModel.showSettings.collectAsStateWithLifecycle()
+            val onShowSettings = { choosePlayModeViewModel.onShowSettings() }
+            val time = choosePlayModeViewModel.time.collectAsStateWithLifecycle()
+            val onTimeSelected: (Int) -> Unit =
+                { choosePlayModeViewModel.onTimeSelected(it) }
+            ChoosePlayModeScreen(
+                navigateToQuizz,
+                difficultSelected.value,
+                onDifficultSelected,
+                inputValue.value,
+                onChangeInput,
+                navigateToScores,
+                showSettings.value,
+                onShowSettings,
+                time.value,
+                onTimeSelected
+            )
+        }
 
-}
+        composable<Scores> { entry ->
+            val scoresViewModel: ScoresViewModel = hiltViewModel(entry)
+            val scores = scoresViewModel.scores.collectAsStateWithLifecycle()
+            val navigateBack: () -> Unit = { navController.popBackStack() }
+            ScoresScreen(scores.value, navigateBack)
+
+        }
+
+        composable<Quizz> { entry ->
+            val quizzViewModel: QuizzViewModel = hiltViewModel(entry)
+            val topic = quizzViewModel.settings.topic
+            val difficulty = quizzViewModel.settings.difficulty
+            val answers = quizzViewModel.answers.collectAsStateWithLifecycle()
+            val timerResult = quizzViewModel.timer.collectAsStateWithLifecycle()
+            //Tenemos que pasar el mapa a String porque ha dia de hoy solo toma valores simples
+            val navigateToResult: (String, String, Map<String, Boolean>) -> Unit =
+                { topic, difficulty, answers ->
+                    val jsonAnswers = Json.encodeToString(answers)
+                    quizzViewModel.stopTimer() // Detener el temporizador antes de navegar
+                    navController.navigate(
+                        Result(
+                            topic,
+                            difficulty,
+                            jsonAnswers,
+                            timerResult.value
+                        )
+                    )
+                }
+            val questions = quizzViewModel.questions.collectAsStateWithLifecycle()
+            val currentQuestionIndex = quizzViewModel.currentQuestion.collectAsStateWithLifecycle()
+            val onAnswerSelected: (String) -> Unit = { answer ->
+                quizzViewModel.onAnswerSelected(answer)
+            }
+            val onNextQuestion = { quizzViewModel.onNextQuestion() }
+            val isLastQuestion = quizzViewModel.isLastQuestion()
+            val isLoading = quizzViewModel.isLoading.collectAsStateWithLifecycle()
+            val selectedAnswer = quizzViewModel.selectedAnswer.collectAsStateWithLifecycle()
+            val optColors = quizzViewModel.optionColors.collectAsStateWithLifecycle()
+            val timer = quizzViewModel.timer.collectAsStateWithLifecycle()
+            val isTimeUp = quizzViewModel.isTimeUp.collectAsStateWithLifecycle()
+            val explanation = quizzViewModel.explanation.collectAsStateWithLifecycle()
+            val showExplanation = quizzViewModel.showExplanation.collectAsStateWithLifecycle()
+            val onExplanationDismiss = { quizzViewModel.onExplanationDismiss() }
+            val error = quizzViewModel.error.collectAsStateWithLifecycle()
+            val onErrorDialogDissmiss: () -> Unit = { navController.popBackStack(ChoosePlayMode, false) }
+            QuizzScreen(
+                questions.value,
+                onAnswerSelected,
+                onNextQuestion,
+                currentQuestionIndex.value,
+                isLastQuestion,
+                navigateToResult,
+                isLoading.value,
+                selectedAnswer.value,
+                optColors.value,
+                topic,
+                difficulty,
+                answers.value,
+                timer.value,
+                isTimeUp.value,
+                explanation.value,
+                showExplanation.value,
+                onExplanationDismiss,
+                error.value,
+                onErrorDialogDissmiss
+            )
+        }
+
+        composable<Result> { entry ->
+            val resultViewModel: ResultViewModel = hiltViewModel(entry)
+            val navigateToChoosePlayMode: () -> Unit =
+                { navController.popBackStack(ChoosePlayMode, false) }
+            val topic = resultViewModel.results.topic
+            val difficulty = resultViewModel.results.difficulty
+            val answers = resultViewModel.answers
+            ResultScreen(
+                topic,
+                difficulty,
+                answers,
+                navigateToChoosePlayMode
+            )
+        }
+
+    }
 
 }
 

@@ -63,19 +63,29 @@ class QuizzViewModel @Inject constructor(
     val isTimeUp: StateFlow<Boolean>
         get() = _isTimeUp.asStateFlow()
 
-    private var countDownTimer: CountDownTimer? = null
+    private val _error: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val error: StateFlow<Boolean>
+        get() = _error.asStateFlow()
 
+    private var countDownTimer: CountDownTimer? = null
 
     // Retrieve the settings from the saved state handle
     val settings = savedStateHandle.toRoute<QuizzSettings>()
 
-
     init {
         viewModelScope.launch {
             _isLoading.value = true
-            _questions.value = repository.generateQuizz(settings.topic, settings.difficulty)
+            val generatedQuestions = repository.generateQuizz(settings.topic, settings.difficulty)
+            val validQuestions = generatedQuestions.filter { it.options.size >= 2 }
+            if (validQuestions.isEmpty()) {
+                _error.value = true
+            } else {
+                _questions.value = validQuestions
+            }
             _isLoading.value = false
-            startTimer(mapTimeToMillis(settings.time))//Si quisieramos que el temporizador no tuviera 60seg(60000ms) podriamos pasarlo como argumento
+            if (!_error.value) {
+                startTimer(mapTimeToMillis(settings.time))
+            }
             println(_questions.value)
         }
     }
