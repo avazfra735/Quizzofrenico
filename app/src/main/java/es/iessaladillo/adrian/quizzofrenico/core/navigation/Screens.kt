@@ -3,6 +3,9 @@ package es.iessaladillo.adrian.quizzofrenico.core.navigation
 import kotlinx.serialization.Serializable
 
 @Serializable
+object Splash
+
+@Serializable
 object Home
 
 @Serializable

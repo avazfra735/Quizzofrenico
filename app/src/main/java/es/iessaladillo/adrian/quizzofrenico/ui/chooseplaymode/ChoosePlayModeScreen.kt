@@ -1,6 +1,9 @@
 package es.iessaladillo.adrian.quizzofrenico.ui.chooseplaymode
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -8,11 +11,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import es.iessaladillo.adrian.quizzofrenico.R
 import es.iessaladillo.adrian.quizzofrenico.ui.theme.QuizzofrenicoTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,11 +33,15 @@ fun ChoosePlayModeScreen(
     showSettings: Boolean,
     onShowSettings: () -> Unit,
     timeSelected: Int,
-    onTimeSelected: (Int) -> Unit
+    onTimeSelected: (Int) -> Unit,
+    onLogOut: () -> Unit
 ) {
+
+
     Scaffold(
         topBar = { ChoosePlayModeTopBar(onShowSettings) }
     ) { innerPadding ->
+        ChoosePlayModeBackground()
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -41,7 +51,11 @@ fun ChoosePlayModeScreen(
             verticalArrangement = Arrangement.Center
         ) {
             if (showSettings) {
-                Dialog(onDismissRequest = { onShowSettings() }) {
+                Dialog(onDismissRequest = {
+                    if (difficultSelected.isNotEmpty() && timeSelected > 0) {//Si no hay dificultad o tiempo seleccionado, no se cierra
+                        onShowSettings()
+                    }
+                }) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -117,26 +131,59 @@ fun ChoosePlayModeScreen(
                     }
                 }
             }
-            Text(
-                text = "Introduce el tema del quiz",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
-                value = inputValue,
-                onValueChange = onChangeInput,
-                label = { Text("Tema") },
-                placeholder = { Text("Ej: Historia") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = { navigateToQuizz(inputValue, difficultSelected, timeSelected) },
-                enabled = difficultSelected.isNotEmpty() && inputValue.isNotEmpty() && timeSelected > 0,
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(
+                        width = 3.dp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
+                        shape = MaterialTheme.shapes.medium
+                    )
+                    .background(
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = MaterialTheme.shapes.medium
+                    )
+                    .padding(16.dp)
             ) {
-                Text(text = "Generar quiz")
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Introduce el tema del quiz",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = inputValue,
+                        onValueChange = onChangeInput,
+                        label = { Text("Tema") },
+                        placeholder = { Text("Ej: Historia") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = { navigateToQuizz(inputValue, difficultSelected, timeSelected) },
+                        enabled = difficultSelected.isNotEmpty() && inputValue.isNotEmpty() && timeSelected > 0,
+                    ) {
+                        Text(text = "Generar quiz")
+                    }
+                    Spacer(modifier = Modifier.height(32.dp))
+                    Text(
+                        text = "¿Quieres jugar con otra cuenta?",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(
+                        onClick = onLogOut,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(text = "Cerrar sesión")
+                    }
+                }
             }
         }
     }
@@ -186,7 +233,7 @@ fun ChoosePlayModeTopBar(onShowSettings: () -> Unit) {
     CenterAlignedTopAppBar(
         title = {
             Text(
-                text = "Elegir dificultad",
+                text = "¿Listo para retarte?",
                 color = MaterialTheme.colorScheme.onPrimary
             )
         },
@@ -205,6 +252,24 @@ fun ChoosePlayModeTopBar(onShowSettings: () -> Unit) {
     )
 }
 
+@Composable
+fun ChoosePlayModeBackground() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        Image(
+            painter = if (!isSystemInDarkTheme()) painterResource(id = R.drawable.light_background_quizzofrenico) else painterResource(
+                id = R.drawable.dark_background_quizzofrenico
+            ),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun ChoosePlayModePreview() {
@@ -216,10 +281,11 @@ fun ChoosePlayModePreview() {
             inputValue = "",
             onChangeInput = {},
             navigateToScores = {},
-            showSettings = true,
+            showSettings = false,
             onShowSettings = {},
             timeSelected = 1,
-            onTimeSelected = {}
+            onTimeSelected = {},
+            onLogOut = {}
         )
     }
 }

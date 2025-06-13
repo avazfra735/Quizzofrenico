@@ -1,8 +1,10 @@
 package es.iessaladillo.adrian.quizzofrenico.ui.result
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,12 +30,16 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.iessaladillo.adrian.quizzofrenico.R
+import es.iessaladillo.adrian.quizzofrenico.ui.theme.QuizzofrenicoTheme
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,6 +57,7 @@ fun ResultScreen(
     Scaffold(
         topBar = { ResultScreenAppBar() }
     ) { innerPadding ->
+        ResultBackground()
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -59,23 +66,37 @@ fun ResultScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(
+                        width = 3.dp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
+                        shape = MaterialTheme.shapes.medium
+                    )
+                    .background(
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = MaterialTheme.shapes.medium
+                    )
+                    .padding(16.dp)
             ) {
-                Text(
-                    text = "Tema: $topic",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                Text(
-                    text = "Dificultad: $difficulty",
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.outline,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Tema: $topic",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = "Dificultad: $difficulty",
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.outline,
+                    )
+                }
             }
 
             LazyColumn(
@@ -178,17 +199,38 @@ fun ResultScreenAppBar() {
     )
 }
 
+@Composable
+fun ResultBackground() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        Image(
+            painter = if (!isSystemInDarkTheme()) painterResource(id = R.drawable.light_background_quizzofrenico) else painterResource(
+                id = R.drawable.dark_background_quizzofrenico
+            ),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+    }
+}
+
 @Preview
 @Composable
 fun ResultScreenPreview() {
-    ResultScreen(
-        topic = "Matemáticas",
-        difficulty = "Fácil",
-        answers = mapOf(
-            "¿Cuánto es 2 + 2?" to true,
-            "¿Cuánto es 3 + 5?" to false,
-            "¿Cuánto es 10 - 4?" to true
-        ),
-        navigateToChoosePlayMode = {}
-    )
+    QuizzofrenicoTheme {
+        ResultScreen(
+            topic = "Matemáticas",
+            difficulty = "Fácil",
+            answers = mapOf(
+                "¿Cuánto es 2 + 2?" to true,
+                "¿Cuánto es 3 + 5?" to false,
+                "¿Cuánto es 10 - 4?" to true
+            ),
+            navigateToChoosePlayMode = {}
+        )
+    }
+
 }

@@ -25,7 +25,8 @@ class DefaultRepository @Inject constructor(
         return try {
             // 1. Crear prompt estructurado
             val prompt = """
-                Genera 5 preguntas de opción múltiple sobre el tema "$topic" en español con un nivel de dificultad $difficulty. 
+                Genera 5 preguntas ÚNICAS Y VARIADAS de opción múltiple sobre el tema "$topic" en español con un nivel de dificultad $difficulty.
+                NO REPITAS preguntas ni uses formulaciones similares.
                 Cada pregunta debe tener 4 opciones (a, b, c, d) y una explicación clara de la respuesta correcta.
                 No incluyas información que no esté directamente relacionada con el tema "$topic".
                 El formato de cada pregunta debe ser EXACTAMENTE como el siguiente ejemplo:
@@ -56,8 +57,16 @@ class DefaultRepository @Inject constructor(
         }
     }
 
-    override suspend fun isUserLoggedIn(): Boolean {
-        return auth.currentUser != null
+    override suspend fun isUserLoggedIn(): AuthState {
+        return if (auth.currentUser != null) {
+            AuthState.Authenticated
+        } else {
+            AuthState.Unauthenticated
+        }
+    }
+
+    override suspend fun signOut() {
+        auth.signOut()
     }
 
     override suspend fun authenticate(email: String, password: String): AuthResult {

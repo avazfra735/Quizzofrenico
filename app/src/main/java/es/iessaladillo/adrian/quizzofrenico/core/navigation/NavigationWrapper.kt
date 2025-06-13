@@ -1,11 +1,17 @@
 package es.iessaladillo.adrian.quizzofrenico.core.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import es.iessaladillo.adrian.quizzofrenico.data.AuthState
 import es.iessaladillo.adrian.quizzofrenico.ui.chooseplaymode.ChoosePlayModeScreen
 import es.iessaladillo.adrian.quizzofrenico.ui.home.HomeScreen
 import es.iessaladillo.adrian.quizzofrenico.ui.login.LoginScreen
@@ -19,14 +25,61 @@ import es.iessaladillo.adrian.quizzofrenico.ui.result.ResultScreen
 import es.iessaladillo.adrian.quizzofrenico.ui.result.ResultViewModel
 import es.iessaladillo.adrian.quizzofrenico.ui.scores.ScoresScreen
 import es.iessaladillo.adrian.quizzofrenico.ui.scores.ScoresViewModel
+import es.iessaladillo.adrian.quizzofrenico.ui.splash.SplashViewModel
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
 
 @Composable
 fun NavigationWrapper() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Home) {
-        composable<Home> {
+    val timeDuration = 600 // Duración de la animación en milisegundos
+    NavHost(
+        navController = navController,
+        startDestination = Splash,
+        enterTransition = {
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(timeDuration)
+            ) + fadeIn(animationSpec = tween(timeDuration))
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(timeDuration)
+            ) + fadeOut(animationSpec = tween(timeDuration))
+        },
+        popEnterTransition = {
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(timeDuration)
+            ) + fadeIn(animationSpec = tween(timeDuration))
+        },
+        popExitTransition = {
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(timeDuration)
+            ) + fadeOut(animationSpec = tween(timeDuration))
+        }) {
+
+        composable<Splash> { entry ->
+            val splashViewModel: SplashViewModel = hiltViewModel(entry)
+            val uiState = splashViewModel.uiState.collectAsStateWithLifecycle()
+            LaunchedEffect(uiState.value) {// Observa el estado de autenticación
+                when (uiState.value) {
+                    is AuthState.Authenticated -> navController.navigate(ChoosePlayMode) {
+                        popUpTo(Splash) { inclusive = true }
+                    }
+
+                    is AuthState.Unauthenticated -> navController.navigate(Home) {
+                        popUpTo(Splash) { inclusive = true }
+                    }
+
+                    is AuthState.Loading -> {}
+                }
+            }
+
+        }
+        composable<Home> { entry ->
             val navigateToLogin = { navController.navigate(Login) }
             val navigateToRegister = { navController.navigate(Register) }
             HomeScreen(navigateToLogin, navigateToRegister)
@@ -115,6 +168,9 @@ fun NavigationWrapper() {
             val time = choosePlayModeViewModel.time.collectAsStateWithLifecycle()
             val onTimeSelected: (Int) -> Unit =
                 { choosePlayModeViewModel.onTimeSelected(it) }
+            val onLogOut: () -> Unit = {
+                choosePlayModeViewModel.onLogOut { navController.navigate(Home) }
+            }
             ChoosePlayModeScreen(
                 navigateToQuizz,
                 difficultSelected.value,
@@ -125,7 +181,8 @@ fun NavigationWrapper() {
                 showSettings.value,
                 onShowSettings,
                 time.value,
-                onTimeSelected
+                onTimeSelected,
+                onLogOut
             )
         }
 
@@ -173,7 +230,8 @@ fun NavigationWrapper() {
             val showExplanation = quizzViewModel.showExplanation.collectAsStateWithLifecycle()
             val onExplanationDismiss = { quizzViewModel.onExplanationDismiss() }
             val error = quizzViewModel.error.collectAsStateWithLifecycle()
-            val onErrorDialogDissmiss: () -> Unit = { navController.popBackStack(ChoosePlayMode, false) }
+            val onErrorDialogDissmiss: () -> Unit =
+                { navController.popBackStack(ChoosePlayMode, false) }
             QuizzScreen(
                 questions.value,
                 onAnswerSelected,

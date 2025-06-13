@@ -23,6 +23,12 @@ sealed class AuthResult {
     data class Error(val message: String) : AuthResult()
 }
 
+sealed class AuthState {
+    object Authenticated : AuthState()
+    object Unauthenticated : AuthState()
+    object Loading : AuthState()
+}
+
 //Is necesary to use serializable to convert the data class to a json string
 @Serializable
 data class QuizzSettings(val topic: String, val difficulty: String, val time: Int)

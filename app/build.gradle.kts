@@ -89,6 +89,7 @@ dependencies {
     implementation (libs.hilt.android)
     kapt (libs.hilt.compiler)
     implementation(libs.firebase.firestore.ktx)
+
 }
 
 kapt{

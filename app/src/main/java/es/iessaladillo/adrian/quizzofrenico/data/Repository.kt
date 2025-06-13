@@ -6,5 +6,6 @@ interface Repository {
     suspend fun register(email: String, password: String): AuthResult
     suspend fun saveQuizz(topic: String, difficulty: String, result:Int,total: Int,timer:String)
     suspend fun getQuizz(): List<Score>
-    suspend fun isUserLoggedIn(): Boolean
+    suspend fun isUserLoggedIn(): AuthState
+    suspend fun signOut()
 }
