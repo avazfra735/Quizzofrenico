@@ -138,7 +138,6 @@ class QuizzViewModel @Inject constructor(
 
         if (!isCorrect) {
             _explanation.value = currentQ.explanation
-            _showExplanation.value = true
         }
 
         _selectedAnswer.value = option.substringBefore(")")
@@ -147,11 +146,16 @@ class QuizzViewModel @Inject constructor(
         println(_answers.value)
     }
 
+    fun onExplanationShown() {
+        _showExplanation.value = true
+    }
+
     // Cierra la explicación y resetea el estado
     fun onExplanationDismiss() {
         _showExplanation.value = false
         _explanation.value = ""
     }
+
 
     fun onNextQuestion() {
         if (_selectedAnswer.value.isNotEmpty()) { // Verifica si la pregunta ha sido respondida

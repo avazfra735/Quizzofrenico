@@ -228,6 +228,7 @@ fun NavigationWrapper() {
             val isTimeUp = quizzViewModel.isTimeUp.collectAsStateWithLifecycle()
             val explanation = quizzViewModel.explanation.collectAsStateWithLifecycle()
             val showExplanation = quizzViewModel.showExplanation.collectAsStateWithLifecycle()
+            val onExplanationShown : () -> Unit = { quizzViewModel.onExplanationShown() }
             val onExplanationDismiss = { quizzViewModel.onExplanationDismiss() }
             val error = quizzViewModel.error.collectAsStateWithLifecycle()
             val onErrorDialogDissmiss: () -> Unit =
@@ -249,6 +250,7 @@ fun NavigationWrapper() {
                 isTimeUp.value,
                 explanation.value,
                 showExplanation.value,
+                onExplanationShown,
                 onExplanationDismiss,
                 error.value,
                 onErrorDialogDissmiss

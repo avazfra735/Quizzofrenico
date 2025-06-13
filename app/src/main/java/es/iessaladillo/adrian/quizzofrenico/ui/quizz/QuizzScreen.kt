@@ -2,9 +2,12 @@ package es.iessaladillo.adrian.quizzofrenico.ui.quizz
 
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
@@ -18,6 +21,7 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +37,7 @@ import androidx.compose.ui.window.Dialog
 import es.iessaladillo.adrian.quizzofrenico.R
 import es.iessaladillo.adrian.quizzofrenico.data.Question
 import es.iessaladillo.adrian.quizzofrenico.ui.theme.QuizzofrenicoTheme
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,6 +58,7 @@ fun QuizzScreen(
     isTimeUp: Boolean,
     explanation: String,
     showExplanation: Boolean,
+    onExplanationShown:() -> Unit,
     onExplanationDismiss: () -> Unit,
     error: Boolean,
     onErrorDialogDismiss: () -> Unit
@@ -141,34 +147,47 @@ fun QuizzScreen(
                 }
             }
 
+            LaunchedEffect(selectedAnswer) {
+                if (selectedAnswer.isNotEmpty() && explanation.isNotBlank()) {
+                    delay(600) // Esperas a que termine animación de colores (ajusta el tiempo según sea necesario)
+                    onExplanationShown()
+                }
+            }
+
             if (showExplanation) {
                 Dialog(onDismissRequest = onExplanationDismiss) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                MaterialTheme.colorScheme.surface,
-                                shape = MaterialTheme.shapes.medium
-                            )
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
+                    AnimatedVisibility(
+                        visible = showExplanation,
+                        enter = fadeIn(animationSpec = tween(durationMillis = 600)),
+                        exit = fadeOut(animationSpec = tween(durationMillis = 600))
                     ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = "Explicación",
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-                            Text(
-                                text = explanation,
-                                fontSize = 16.sp,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Button(onClick = onExplanationDismiss) {
-                                Text("Cerrar")
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    MaterialTheme.colorScheme.surface,
+                                    shape = MaterialTheme.shapes.medium
+                                )
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    text = "Explicación",
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                                Text(
+                                    text = explanation,
+                                    fontSize = 16.sp,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(onClick = onExplanationDismiss) {
+                                    Text("Cerrar")
+                                }
                             }
                         }
                     }
@@ -403,7 +422,8 @@ fun QuizzScreenPreview() {
             showExplanation = false,
             onExplanationDismiss = {},
             error = false,
-            onErrorDialogDismiss = {}
+            onErrorDialogDismiss = {},
+            onExplanationShown = {  }
         )
     }
 }
