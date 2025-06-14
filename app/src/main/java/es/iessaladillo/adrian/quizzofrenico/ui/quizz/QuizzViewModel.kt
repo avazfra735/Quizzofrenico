@@ -55,6 +55,10 @@ class QuizzViewModel @Inject constructor(
     val explanation: StateFlow<String>
         get() = _explanation.asStateFlow()
 
+    private val _explanationPending: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val explanationPending: StateFlow<Boolean>
+        get() = _explanationPending.asStateFlow()
+
     private val _timer: MutableStateFlow<String> = MutableStateFlow("")
     val timer: StateFlow<String>
         get() = _timer.asStateFlow()
@@ -154,6 +158,10 @@ class QuizzViewModel @Inject constructor(
     fun onExplanationDismiss() {
         _showExplanation.value = false
         _explanation.value = ""
+    }
+
+    fun onExplanationPending() {
+        _explanationPending.value = !_explanationPending.value
     }
 
 

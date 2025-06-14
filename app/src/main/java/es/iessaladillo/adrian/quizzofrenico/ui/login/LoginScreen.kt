@@ -166,7 +166,8 @@ fun LoginScreen(
                     ) {
                         Text(
                             text = stringResource(R.string.login),
-                            color = MaterialTheme.colorScheme.onPrimary
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            style = MaterialTheme.typography.titleMedium
                         )
                     }
 
@@ -175,7 +176,8 @@ fun LoginScreen(
                     TextButton(onClick = navigateToRegister) {
                         Text(
                             text = stringResource(R.string.no_account),
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.titleMedium
                         )
                     }
                 }

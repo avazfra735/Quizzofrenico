@@ -26,6 +26,13 @@ class ChoosePlayModeViewModel @Inject constructor(private val repository: Reposi
     private val _time: MutableStateFlow<Int> = MutableStateFlow(0)
     val time: StateFlow<Int> get() = _time.asStateFlow()
 
+    private val _userName: MutableStateFlow<String> = MutableStateFlow("")
+    val userName: StateFlow<String> get() = _userName.asStateFlow()
+
+    init {
+        _userName.value = repository.getUserName()
+    }
+
     fun onChangeInput(newInputValue: String) {
         _inputValue.value = newInputValue
     }

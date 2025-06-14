@@ -62,7 +62,7 @@ fun QuizzofrenicoTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = PlusJakartaSansTypography,
         content = content
     )
 }

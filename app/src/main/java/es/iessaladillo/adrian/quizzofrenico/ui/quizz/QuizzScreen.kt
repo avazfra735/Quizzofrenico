@@ -60,6 +60,8 @@ fun QuizzScreen(
     showExplanation: Boolean,
     onExplanationShown:() -> Unit,
     onExplanationDismiss: () -> Unit,
+    explanationPending: Boolean,
+    onExplanationPending: () -> Unit,
     error: Boolean,
     onErrorDialogDismiss: () -> Unit
 ) {
@@ -149,13 +151,15 @@ fun QuizzScreen(
 
             LaunchedEffect(selectedAnswer) {
                 if (selectedAnswer.isNotEmpty() && explanation.isNotBlank()) {
+                    onExplanationPending()
                     delay(600) // Esperas a que termine animación de colores (ajusta el tiempo según sea necesario)
                     onExplanationShown()
+                    onExplanationPending()
                 }
             }
 
             if (showExplanation) {
-                Dialog(onDismissRequest = onExplanationDismiss) {
+                Dialog(onDismissRequest = { }) {
                     AnimatedVisibility(
                         visible = showExplanation,
                         enter = fadeIn(animationSpec = tween(durationMillis = 600)),
@@ -214,7 +218,9 @@ fun QuizzScreen(
                     topic = topic,
                     difficulty = difficulty,
                     answers = answers,
-                    onNextQuestion = onNextQuestion
+                    onNextQuestion = onNextQuestion,
+                    showExplanation = showExplanation,
+                    explanationPending = explanationPending
                 )
 
 
@@ -260,8 +266,9 @@ fun AnimatedQuestion(
     topic: String,
     difficulty: String,
     answers: Map<String, Boolean>,
-    onNextQuestion: () -> Unit
-
+    onNextQuestion: () -> Unit,
+    showExplanation: Boolean,
+    explanationPending: Boolean
 ) {
     @OptIn(ExperimentalAnimationApi::class)
     AnimatedContent(
@@ -352,7 +359,7 @@ fun AnimatedQuestion(
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = selectedAnswer.isNotEmpty()
+                    enabled = selectedAnswer.isNotEmpty() && !showExplanation && !explanationPending
                 ) {
                     Text(
                         text = if (isLastQuestion) "Finalizar Quiz" else "Siguiente Pregunta",
@@ -423,7 +430,9 @@ fun QuizzScreenPreview() {
             onExplanationDismiss = {},
             error = false,
             onErrorDialogDismiss = {},
-            onExplanationShown = {  }
+            onExplanationShown = {  },
+            explanationPending = false,
+            onExplanationPending = {  }
         )
     }
 }

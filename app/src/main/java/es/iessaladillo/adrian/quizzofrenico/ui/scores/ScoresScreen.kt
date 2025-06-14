@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -92,7 +93,8 @@ private fun ScoreItem(testResult: Score) {
                 text = testResult.timer,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.End
             )
         }
     }
@@ -105,7 +107,8 @@ fun ScoresTopBar(onBackClick: () -> Unit) {
         title = {
             Text(
                 text = "Resultados",
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.onPrimary,
+                style = MaterialTheme.typography.headlineMedium,
             )
         },
         navigationIcon = {
@@ -148,7 +151,7 @@ fun ScoresScreenPreview() {
         ScoresScreen(
             scores = listOf(
                 Score("Tema 1", "Fácil", 5, 5, "2023-10-01", "00:30"),
-                Score("Tema 2", "Intermedio", 3, 5, "2023-10-02", "00:45"),
+                Score("Tema 2", "Intermedio", 3, 5, "2023-10-02", "Tiempo agotado"),
                 Score("Tema 3", "Difícil", 4, 5, "2023-10-03", "00:50")
             ),
             onBackClick = {}

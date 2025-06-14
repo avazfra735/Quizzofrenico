@@ -5,13 +5,11 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import es.iessaladillo.adrian.quizzofrenico.data.AuthState
 import es.iessaladillo.adrian.quizzofrenico.ui.chooseplaymode.ChoosePlayModeScreen
 import es.iessaladillo.adrian.quizzofrenico.ui.home.HomeScreen
 import es.iessaladillo.adrian.quizzofrenico.ui.login.LoginScreen
@@ -25,6 +23,7 @@ import es.iessaladillo.adrian.quizzofrenico.ui.result.ResultScreen
 import es.iessaladillo.adrian.quizzofrenico.ui.result.ResultViewModel
 import es.iessaladillo.adrian.quizzofrenico.ui.scores.ScoresScreen
 import es.iessaladillo.adrian.quizzofrenico.ui.scores.ScoresViewModel
+import es.iessaladillo.adrian.quizzofrenico.ui.splash.SplashScreen
 import es.iessaladillo.adrian.quizzofrenico.ui.splash.SplashViewModel
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
@@ -63,20 +62,11 @@ fun NavigationWrapper() {
 
         composable<Splash> { entry ->
             val splashViewModel: SplashViewModel = hiltViewModel(entry)
+            val navigateToHome =
+                { navController.navigate(Home) { popUpTo(Splash) { inclusive = true } } }
+            val navigateToChoosePlayMode = { navController.navigate(ChoosePlayMode) }
             val uiState = splashViewModel.uiState.collectAsStateWithLifecycle()
-            LaunchedEffect(uiState.value) {// Observa el estado de autenticación
-                when (uiState.value) {
-                    is AuthState.Authenticated -> navController.navigate(ChoosePlayMode) {
-                        popUpTo(Splash) { inclusive = true }
-                    }
-
-                    is AuthState.Unauthenticated -> navController.navigate(Home) {
-                        popUpTo(Splash) { inclusive = true }
-                    }
-
-                    is AuthState.Loading -> {}
-                }
-            }
+            SplashScreen(navigateToHome, navigateToChoosePlayMode, uiState.value)
 
         }
         composable<Home> { entry ->
@@ -171,6 +161,7 @@ fun NavigationWrapper() {
             val onLogOut: () -> Unit = {
                 choosePlayModeViewModel.onLogOut { navController.navigate(Home) }
             }
+            val username = choosePlayModeViewModel.userName.collectAsStateWithLifecycle()
             ChoosePlayModeScreen(
                 navigateToQuizz,
                 difficultSelected.value,
@@ -182,7 +173,8 @@ fun NavigationWrapper() {
                 onShowSettings,
                 time.value,
                 onTimeSelected,
-                onLogOut
+                onLogOut,
+                username.value
             )
         }
 
@@ -228,7 +220,10 @@ fun NavigationWrapper() {
             val isTimeUp = quizzViewModel.isTimeUp.collectAsStateWithLifecycle()
             val explanation = quizzViewModel.explanation.collectAsStateWithLifecycle()
             val showExplanation = quizzViewModel.showExplanation.collectAsStateWithLifecycle()
-            val onExplanationShown : () -> Unit = { quizzViewModel.onExplanationShown() }
+            val onExplanationShown: () -> Unit = { quizzViewModel.onExplanationShown() }
+            val explanationPending = quizzViewModel.explanationPending.collectAsStateWithLifecycle()
+            val onExplanationPending: () -> Unit =
+                { quizzViewModel.onExplanationPending() }
             val onExplanationDismiss = { quizzViewModel.onExplanationDismiss() }
             val error = quizzViewModel.error.collectAsStateWithLifecycle()
             val onErrorDialogDissmiss: () -> Unit =
@@ -252,6 +247,8 @@ fun NavigationWrapper() {
                 showExplanation.value,
                 onExplanationShown,
                 onExplanationDismiss,
+                explanationPending.value,
+                onExplanationPending,
                 error.value,
                 onErrorDialogDissmiss
             )

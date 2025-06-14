@@ -1,5 +1,8 @@
 package es.iessaladillo.adrian.quizzofrenico.ui.chooseplaymode
 
+import android.annotation.SuppressLint
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -8,10 +11,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,6 +26,7 @@ import androidx.compose.ui.window.Dialog
 import es.iessaladillo.adrian.quizzofrenico.R
 import es.iessaladillo.adrian.quizzofrenico.ui.theme.QuizzofrenicoTheme
 
+@SuppressLint("ContextCastToActivity")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChoosePlayModeScreen(
@@ -34,12 +40,17 @@ fun ChoosePlayModeScreen(
     onShowSettings: () -> Unit,
     timeSelected: Int,
     onTimeSelected: (Int) -> Unit,
-    onLogOut: () -> Unit
+    onLogOut: () -> Unit,
+    username:String
 ) {
+    val activity = LocalContext.current as? Activity
 
+    BackHandler {
+        activity?.finish() // Cierra la aplicación
+    }
 
     Scaffold(
-        topBar = { ChoosePlayModeTopBar(onShowSettings) }
+        topBar = { ChoosePlayModeTopBar(onShowSettings,username) }
     ) { innerPadding ->
         ChoosePlayModeBackground()
         Column(
@@ -82,12 +93,16 @@ fun ChoosePlayModeScreen(
                                 },
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text("Ver resultados anteriores")
+                                Text(
+                                    text = "Ver resultados anteriores",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                )
                             }
                             Text(
                                 text = "Selecciona la dificultad",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             DifficultyButton(
@@ -110,6 +125,7 @@ fun ChoosePlayModeScreen(
                                 text = "Selecciona el tiempo",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             TimeButton(
@@ -151,7 +167,7 @@ fun ChoosePlayModeScreen(
                 ) {
                     Text(
                         text = "Introduce el tema del quiz",
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.onBackground
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -168,7 +184,10 @@ fun ChoosePlayModeScreen(
                         onClick = { navigateToQuizz(inputValue, difficultSelected, timeSelected) },
                         enabled = difficultSelected.isNotEmpty() && inputValue.isNotEmpty() && timeSelected > 0,
                     ) {
-                        Text(text = "Generar quiz")
+                        Text(text = "Generar Quiz",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
                     Spacer(modifier = Modifier.height(32.dp))
                     Text(
@@ -181,7 +200,10 @@ fun ChoosePlayModeScreen(
                         onClick = onLogOut,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(text = "Cerrar sesión")
+                        Text(text = "Cerrar sesión",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
                 }
             }
@@ -204,7 +226,11 @@ private fun TimeButton(
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(containerColor = colors)
     ) {
-        Text(text = text, color = MaterialTheme.colorScheme.onPrimary)
+        Text(
+            text = text,
+            color = MaterialTheme.colorScheme.onPrimary,
+            style = MaterialTheme.typography.bodyLarge,
+        )
     }
 }
 
@@ -223,18 +249,23 @@ private fun DifficultyButton(
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(containerColor = colors)
     ) {
-        Text(text = text, color = MaterialTheme.colorScheme.onPrimary)
+        Text(
+            text = text,
+            color = MaterialTheme.colorScheme.onPrimary,
+            style = MaterialTheme.typography.bodyLarge,
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChoosePlayModeTopBar(onShowSettings: () -> Unit) {
+fun ChoosePlayModeTopBar(onShowSettings: () -> Unit,username: String) {
     CenterAlignedTopAppBar(
         title = {
             Text(
-                text = "¿Listo para retarte?",
-                color = MaterialTheme.colorScheme.onPrimary
+                text = "Hola $username",
+                color = MaterialTheme.colorScheme.onPrimary,
+                style = MaterialTheme.typography.headlineSmall,
             )
         },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -285,7 +316,8 @@ fun ChoosePlayModePreview() {
             onShowSettings = {},
             timeSelected = 1,
             onTimeSelected = {},
-            onLogOut = {}
+            onLogOut = {},
+            username = "Invitado"
         )
     }
 }

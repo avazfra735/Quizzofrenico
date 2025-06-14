@@ -57,7 +57,7 @@ class DefaultRepository @Inject constructor(
         }
     }
 
-    override suspend fun isUserLoggedIn(): AuthState {
+    override fun isUserLoggedIn(): AuthState {
         return if (auth.currentUser != null) {
             AuthState.Authenticated
         } else {
@@ -65,7 +65,7 @@ class DefaultRepository @Inject constructor(
         }
     }
 
-    override suspend fun signOut() {
+    override fun signOut() {
         auth.signOut()
     }
 
@@ -93,7 +93,11 @@ class DefaultRepository @Inject constructor(
         }
     }
 
-    fun mapFirebaseAuthError(e: Exception): String {
+    override fun getUserName(): String {
+        return auth.currentUser?.email?.substringBefore("@") ?: "Invitado"
+    }
+
+    private fun mapFirebaseAuthError(e: Exception): String {
         return when (e) {
             is FirebaseAuthWeakPasswordException -> "La contraseña es demasiado débil."
             is FirebaseAuthUserCollisionException -> "Este correo ya está registrado."

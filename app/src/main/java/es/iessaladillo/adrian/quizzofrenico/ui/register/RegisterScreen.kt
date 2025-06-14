@@ -163,7 +163,8 @@ fun RegisterScreen(
                         Text(
                             text = errorMessage,
                             color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.padding(bottom = 16.dp)
+                            modifier = Modifier.padding(bottom = 16.dp),
+                            style = MaterialTheme.typography.bodyMedium,
                         )
                     }
 
@@ -180,7 +181,8 @@ fun RegisterScreen(
                     ) {
                         Text(
                             text = stringResource(R.string.register),
-                            color = MaterialTheme.colorScheme.onPrimary
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            style = MaterialTheme.typography.titleMedium
                         )
                     }
 
@@ -189,7 +191,8 @@ fun RegisterScreen(
                     TextButton(onClick = navigateToLogin) {
                         Text(
                             text = stringResource(R.string.already_have_account),
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.titleMedium
                         )
                     }
                 }
