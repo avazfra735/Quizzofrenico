@@ -134,8 +134,8 @@ fun HomeBackground() {
             .background(MaterialTheme.colorScheme.background)
     ) {
         Image(
-            painter = if (!isSystemInDarkTheme()) painterResource(id = R.drawable.light_background_quizzofrenico) else painterResource(
-                id = R.drawable.dark_background_quizzofrenico
+            painter = if (!isSystemInDarkTheme()) painterResource(id = R.drawable.main_image) else painterResource(
+                id = R.drawable.main_image_dark
             ),
             contentDescription = null,
             contentScale = ContentScale.Crop,

@@ -58,7 +58,7 @@ fun QuizzScreen(
     isTimeUp: Boolean,
     explanation: String,
     showExplanation: Boolean,
-    onExplanationShown:() -> Unit,
+    onExplanationShown: () -> Unit,
     onExplanationDismiss: () -> Unit,
     explanationPending: Boolean,
     onExplanationPending: () -> Unit,
@@ -94,32 +94,33 @@ fun QuizzScreen(
         return
     }
 
-    if (isLoading) {
-        Dialog(onDismissRequest = {}) {
-            Box(
-                modifier = Modifier
-                    .size(200.dp)
-                    .background(
-                        MaterialTheme.colorScheme.surface,
-                        shape = MaterialTheme.shapes.medium
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Cargando preguntas...",
-                        color = MaterialTheme.colorScheme.primary
-                    )
+
+    Scaffold(
+        topBar = { QuizzTopBar(currentQuestionIndex, questions.size, quizTimer) }
+    ) { innerPadding ->
+        QuizzBackground()
+        if (isLoading) {
+            Dialog(onDismissRequest = {}) {
+                Box(
+                    modifier = Modifier
+                        .size(200.dp)
+                        .background(
+                            MaterialTheme.colorScheme.surface,
+                            shape = MaterialTheme.shapes.medium
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Cargando preguntas...",
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
-        }
-    } else {
-        Scaffold(
-            topBar = { QuizzTopBar(currentQuestionIndex, questions.size, quizTimer) }
-        ) { innerPadding ->
-            QuizzBackground()
+        } else {
             if (isTimeUp) {
                 Dialog(onDismissRequest = {}) {
                     Box(
@@ -227,6 +228,7 @@ fun QuizzScreen(
             }
         }
     }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -235,7 +237,7 @@ fun QuizzTopBar(currentQuestionIndex: Int, questions: Int, quizTimer: String) {
     CenterAlignedTopAppBar(
         title = {
             Text(
-                text = "Quiz - Pregunta ${currentQuestionIndex + 1}/$questions",
+                text = "Quiz - Pregunta ${currentQuestionIndex + 1}/${if (questions == 0) "?" else questions}",
                 color = MaterialTheme.colorScheme.onPrimary
             )
         },
@@ -380,8 +382,8 @@ fun QuizzBackground() {
             .background(MaterialTheme.colorScheme.background)
     ) {
         Image(
-            painter = if (!isSystemInDarkTheme()) painterResource(id = R.drawable.light_background_quizzofrenico) else painterResource(
-                id = R.drawable.dark_background_quizzofrenico
+            painter = if (!isSystemInDarkTheme()) painterResource(id = R.drawable.main_image) else painterResource(
+                id = R.drawable.main_image_dark
             ),
             contentDescription = null,
             contentScale = ContentScale.Crop,
@@ -430,9 +432,9 @@ fun QuizzScreenPreview() {
             onExplanationDismiss = {},
             error = false,
             onErrorDialogDismiss = {},
-            onExplanationShown = {  },
+            onExplanationShown = { },
             explanationPending = false,
-            onExplanationPending = {  }
+            onExplanationPending = { }
         )
     }
 }

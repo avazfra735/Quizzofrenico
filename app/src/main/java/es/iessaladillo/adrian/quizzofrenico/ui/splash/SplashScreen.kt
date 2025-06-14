@@ -5,11 +5,13 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -22,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -30,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import es.iessaladillo.adrian.quizzofrenico.R
 import es.iessaladillo.adrian.quizzofrenico.data.AuthState
 import es.iessaladillo.adrian.quizzofrenico.ui.theme.QuizzofrenicoTheme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun SplashScreen(
@@ -61,16 +66,22 @@ fun SplashScreen(
                 .fillMaxSize()
                 .padding(contentPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Bottom
+            verticalArrangement = Arrangement.Center
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.primary)
+                    .border(
+                        width = 2.dp,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        shape = MaterialTheme.shapes.medium
+                    )
+                    .clip(MaterialTheme.shapes.medium) // Recorta las esquinas
+                    .background(MaterialTheme.colorScheme.primary) // Aplica el fondo después de clip
                     .padding(vertical = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                AnimatedText()
+                JumpingLettersText()
             }
 
         }
@@ -78,30 +89,46 @@ fun SplashScreen(
     }
 
 }
+
 @Composable
-fun AnimatedText() {
-    val offsetX = remember { Animatable(0f) }
+fun JumpingLettersText() {
+    val text = "Toca la pantalla para comenzar"
+    val animatables = remember { text.map { Animatable(0f) } }
 
     LaunchedEffect(Unit) {
         while (true) {
-            offsetX.animateTo(
-                targetValue = 20f,
-                animationSpec = tween(durationMillis = 1000, easing = LinearEasing)
-            )
-            offsetX.animateTo(
-                targetValue = -20f,
-                animationSpec = tween(durationMillis = 1000, easing = LinearEasing)
-            )
+            text.indices.forEach { index ->
+                launch {
+                    animatables[index].animateTo(
+                        targetValue = -20f,
+                        animationSpec = tween(durationMillis = 200, easing = LinearEasing)
+                    )
+                    animatables[index].animateTo(
+                        targetValue = 0f,
+                        animationSpec = tween(durationMillis = 200, easing = LinearEasing)
+                    )
+                }
+                delay(50) // Delay para el efecto de ola
+            }
+            delay(500) // Pausa entre ciclos de ola
         }
     }
 
-    Text(
-        text = "Toca la pantalla para comenzar",
-        style = MaterialTheme.typography.headlineSmall,
-        color = MaterialTheme.colorScheme.onPrimary,
-        modifier = Modifier.offset(x = offsetX.value.dp)
-    )
+    Row(
+        modifier = Modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        text.forEachIndexed { index, char ->
+            Text(
+                text = char.toString(),
+                color = MaterialTheme.colorScheme.onPrimary,
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.offset(y = animatables[index].value.dp)
+            )
+        }
+    }
 }
+
 
 
 @Composable
