@@ -11,6 +11,7 @@ import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import com.google.firebase.firestore.Query.Direction.DESCENDING
 import java.text.SimpleDateFormat
 import java.util.Locale
 import javax.inject.Inject
@@ -140,7 +141,7 @@ class DefaultRepository @Inject constructor(
             val email =
                 auth.currentUser?.email ?: throw IllegalStateException("User not authenticated")
             val quizzes = firestore.collection("users").document(email).collection("quizzes")
-                .orderBy("timestamp").get().await()
+                .orderBy("timestamp",DESCENDING).get().await() // Obtener los documentos de Firestore de mas reciente a mas antiguo
             quizzes.documents.map { doc ->
                 val rawDate = doc.getDate("timestamp")
                 val formattedDate = rawDate?.let {
