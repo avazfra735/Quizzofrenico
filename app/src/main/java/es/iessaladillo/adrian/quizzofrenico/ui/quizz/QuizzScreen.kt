@@ -238,7 +238,8 @@ fun QuizzTopBar(currentQuestionIndex: Int, questions: Int, quizTimer: String) {
         title = {
             Text(
                 text = "Quiz - Pregunta ${currentQuestionIndex + 1}/${if (questions == 0) "?" else questions}",
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.onPrimary,
+                style = MaterialTheme.typography.headlineSmall
             )
         },
         actions = {
